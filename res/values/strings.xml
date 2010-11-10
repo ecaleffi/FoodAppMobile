@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, FoodAppMobile!</string>
+    <string name="app_name">FoodAppMobile</string>
+    <string name="main_title">FoodApp Mobile</string>
+    <string name="login_label">Login</string>
+    <string name="about_label">About</string>
+    <string name="button_connect">Connetti</string>
+    <string name="about_text">
+    Benvenuto in FoodApp Mobile. Con questa applicazione potrai accedere al nostro
+    servizio di prenotazione online di prodotti alimentari.
+    Avrai la possibilità di loggarti, visualizzare l\'ampio catalogo di prodotti ed 
+    effettuare prenotazioni direttamente dal tuo dispositivo mobile.
+    Cosa aspetti? Effettua il login e seleziona i prodotti che desideri.
+    </string>
+    <string name="about_title">About FoodApp Mobile</string>
+    <string name="login_title">Login su FoodApp</string>
+</resources>

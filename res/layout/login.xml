@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background"
+	android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:orientation="vertical" >
+    <TextView
+         android:text="@string/login_title"
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_marginBottom="15dip"
+         android:textSize="24.5sp" />
+
+	<TableLayout
+   		android:layout_height="fill_parent"
+   		android:layout_width="fill_parent"
+   		android:stretchColumns="1" >
+   		<TableRow>
+      		<TextView
+      			android:layout_column="1"
+      			android:text="Nome: "
+      			android:layout_height="wrap_content"
+      			android:layout_width="wrap_content"
+      			android:padding="3dip" />
+      		<EditText
+      			android:id="@+id/login_name"
+      			android:layout_height="wrap_content"
+      			android:layout_width="200sp"
+      			android:textSize="15sp" />
+   		</TableRow>
+   		<TableRow>
+      		<TextView
+      			android:layout_column="1"
+      			android:text="Password: "
+      			android:layout_height="wrap_content"
+      			android:layout_width="wrap_content"
+      			android:padding="3dip" />
+      		<EditText
+      			android:id="@+id/login_pw"
+      			android:layout_height="wrap_content"
+      			android:layout_width="200sp"
+      			android:password="true"
+      			android:textSize="15sp" />
+   		</TableRow>
+   		<TableRow>
+   			<Button
+   				android:layout_column="1"
+   				android:id="@+id/submit_login"
+   				android:text="Login"
+   				android:layout_width="wrap_content"
+   				android:layout_height="wrap_content" />
+   		</TableRow>
+     
+	</TableLayout>
+	
+	
+</LinearLayout>
