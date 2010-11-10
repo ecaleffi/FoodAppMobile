@@ -18,6 +18,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +41,7 @@ public class Login extends Activity{
     }	// fine onCreate
     
     public void postData(){
+    	int respCode = 0;
     	
     	//Serve per fare in modo che il metodo POST venga gestito tramite la 
     	// versione di HTTP 1.1; in questo modo la risposta è molto più performante
@@ -64,9 +66,23 @@ public class Login extends Activity{
             HttpResponse response = httpclient.execute(httppost);
             // Se tutto va bene viene ritornato il codice 200
             System.out.println(response.getStatusLine().getStatusCode());
+            respCode = response.getStatusLine().getStatusCode();
               
         } catch (ClientProtocolException e) {            
         } catch (IOException e) {  }
-    }
+        
+        //Controllo il valore del codice della risposta
+        if (respCode == 401) {
+        	Intent loginFailed = new Intent(this, LoginFailed.class);
+        	startActivity(loginFailed);
+        }
+        if (respCode == 200) {
+        	
+        }
+        if (respCode == 0) {
+        	
+        }
+        
+    }   
 
 }

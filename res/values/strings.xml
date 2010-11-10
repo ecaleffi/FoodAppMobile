@@ -13,6 +13,11 @@
     effettuare prenotazioni direttamente dal tuo dispositivo mobile.
     Cosa aspetti? Effettua il login e seleziona i prodotti che desideri.
     </string>
-    <string name="about_title">About FoodApp Mobile</string>
     <string name="login_title">Login su FoodApp</string>
+    <string name="about_title">About FoodApp Mobile</string>
+    <string name="loginfailed">Login Fallito</string>
+    <string name="loginfailed_text">
+    Le credenziali di login fornite non sono corrette.
+    Prova a rieseguire il login.
+    </string>
 </resources>

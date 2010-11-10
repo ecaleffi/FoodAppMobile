@@ -17,6 +17,9 @@
 			android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".Login"
         	android:label="@string/login_label" />
+        <activity android:name=".LoginFailed"
+        	android:label="@string/loginfailed" 
+			android:theme="@android:style/Theme.Dialog" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 
