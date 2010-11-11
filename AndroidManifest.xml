@@ -20,6 +20,13 @@
         <activity android:name=".LoginFailed"
         	android:label="@string/loginfailed" 
 			android:theme="@android:style/Theme.Dialog" />
+		<activity android:name=".PostErr"
+        	android:label="@string/posterr" 
+			android:theme="@android:style/Theme.Dialog" />
+		<activity android:name=".Select"
+        	android:label="@string/select_label" />
+        <activity android:name=".ProdList"
+        	android:label="@string/prodlist_title" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 

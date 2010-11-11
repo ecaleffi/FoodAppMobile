@@ -20,4 +20,11 @@
     Le credenziali di login fornite non sono corrette.
     Prova a rieseguire il login.
     </string>
+    <string name="posterr_text">Errore nella richiesta HTTP POST.</string>
+    <string name="posterr">Errore POST.</string>
+    <string name="select_title">Visualizza i prodotti o effettua un\'ordinazione</string>
+    <string name="prodlist_label">Lista dei Prodotti</string>
+    <string name="order_label">Ordinazione</string>
+    <string name="select_label">Selezione</string>
+    <string name="prodlist_title">Lista dei Prodotti</string>
 </resources>

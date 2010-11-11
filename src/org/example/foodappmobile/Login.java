@@ -77,10 +77,13 @@ public class Login extends Activity{
         	startActivity(loginFailed);
         }
         if (respCode == 200) {
+        	Intent select = new Intent(this, Select.class);
+        	startActivity(select);
         	
         }
         if (respCode == 0) {
-        	
+        	Intent postErr = new Intent(this, PostErr.class);
+        	startActivity(postErr);
         }
         
     }   

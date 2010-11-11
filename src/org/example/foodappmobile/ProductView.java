@@ -17,6 +17,7 @@ public class ProductView extends TextView{
 		super(context);
 		setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT));
+		setBackgroundResource(R.color.background);
 		String jsonData = result;
 		String output = "";
 		//String jsonstring = "{ 'prods': [ { 'name': 'Parmigiano', 'description': 'desc'}, { 'name': 'Lasagna', 'description': 'lasagna Barilla' } ] }";

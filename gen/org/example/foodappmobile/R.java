@@ -23,6 +23,9 @@ public final class R {
         public static final int login_name=0x7f060001;
         public static final int login_pw=0x7f060002;
         public static final int loginfailed_content=0x7f060004;
+        public static final int order_button=0x7f060009;
+        public static final int posterr_content=0x7f060007;
+        public static final int prodlist_button=0x7f060008;
         public static final int submit_login=0x7f060003;
     }
     public static final class layout {
@@ -30,6 +33,8 @@ public final class R {
         public static final int login=0x7f030001;
         public static final int loginfailed=0x7f030002;
         public static final int main=0x7f030003;
+        public static final int posterr=0x7f030004;
+        public static final int select=0x7f030005;
     }
     public static final class string {
         public static final int about_label=0x7f050004;
@@ -43,5 +48,12 @@ public final class R {
         public static final int loginfailed=0x7f050009;
         public static final int loginfailed_text=0x7f05000a;
         public static final int main_title=0x7f050002;
+        public static final int order_label=0x7f05000f;
+        public static final int posterr=0x7f05000c;
+        public static final int posterr_text=0x7f05000b;
+        public static final int prodlist_label=0x7f05000e;
+        public static final int prodlist_title=0x7f050011;
+        public static final int select_label=0x7f050010;
+        public static final int select_title=0x7f05000d;
     }
 }
