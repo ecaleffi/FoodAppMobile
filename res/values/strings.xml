@@ -27,4 +27,5 @@
     <string name="order_label">Ordinazione</string>
     <string name="select_label">Selezione</string>
     <string name="prodlist_title">Lista dei Prodotti</string>
+    <string name="order_title">Ordinazioni</string>
 </resources>

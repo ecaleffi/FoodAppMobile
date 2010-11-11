@@ -49,4 +49,5 @@ public class ProductView extends TextView{
 		
 		setText(output);
 	}
+
 }

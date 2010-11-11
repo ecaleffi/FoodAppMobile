@@ -28,6 +28,8 @@ public class Select extends Activity implements OnClickListener {
         		break;
         	
         	case R.id.order_button:
+        		Intent order = new Intent(this, Order.class);
+        		startActivity(order);
         		break;
         }
     }

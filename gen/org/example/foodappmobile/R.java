@@ -49,6 +49,7 @@ public final class R {
         public static final int loginfailed_text=0x7f05000a;
         public static final int main_title=0x7f050002;
         public static final int order_label=0x7f05000f;
+        public static final int order_title=0x7f050012;
         public static final int posterr=0x7f05000c;
         public static final int posterr_text=0x7f05000b;
         public static final int prodlist_label=0x7f05000e;
