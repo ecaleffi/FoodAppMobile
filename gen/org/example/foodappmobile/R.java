@@ -12,6 +12,7 @@ public final class R {
     }
     public static final class color {
         public static final int background=0x7f040000;
+        public static final int separator=0x7f040001;
     }
     public static final class drawable {
         public static final int icon=0x7f020000;
