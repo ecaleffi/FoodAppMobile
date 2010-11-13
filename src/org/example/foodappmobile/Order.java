@@ -8,16 +8,23 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
@@ -43,7 +50,10 @@ public class Order extends Activity implements OnClickListener{
 	String[] desc;
 	/* Array di stringhe per i prezzi dei prodotti*/
 	String[] price;
-	
+	/* Cookie usato per mantenere la sessione*/
+	Cookie mycookie = null;
+	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
+	HttpContext localContext = null;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -177,8 +187,19 @@ public class Order extends Activity implements OnClickListener{
     	params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
     	
     	//Crea un nuovo HttpClient e POST Header
-    	HttpClient httpclient = new DefaultHttpClient(params);
+    	DefaultHttpClient httpclient = new DefaultHttpClient(params);
     	HttpPost httppost = new HttpPost("http://192.168.2.6:3000/cart/add");
+    	
+    	if (mycookie != null) {
+    		// Creo un'istanza locale di CookieStore
+    		CookieStore cookieStore = new BasicCookieStore();
+    		cookieStore.addCookie(mycookie);
+    	
+    		// Creo un context HTTP locale
+    		localContext = new BasicHttpContext();
+    		// Lego il cookie store al context locale
+    		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+    	}
     	
     	try {  
             // Aggiungo i parametri da passare con la richiesta POST 
@@ -188,10 +209,28 @@ public class Order extends Activity implements OnClickListener{
             nameValuePairs.add(new BasicNameValuePair("price", price[id]));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
-            // Execute HTTP Post Request  
-            HttpResponse response = httpclient.execute(httppost);
+            // Execute HTTP Post Request
+            if (localContext != null) {
+            	HttpResponse response = httpclient.execute(httppost, localContext);
+            }
+            else {
+            	HttpResponse response = httpclient.execute(httppost);
+            }
             // Se tutto va bene viene ritornato il codice 200
             //System.out.println(response.getStatusLine().getStatusCode());
+            
+            /* Controllo se ci sono dei cookie nella risposta */
+            if (mycookie == null) {
+            	List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+            	mycookie = cookies.get(0);
+            	if (cookies.isEmpty()) {
+            		System.out.println("Nessun Cookie");
+            	} else {
+            		for (int i = 0; i < cookies.size(); i++) {
+            			System.out.println("- " + cookies.get(i).toString());
+            		}
+            	}
+            }
               
         } catch (ClientProtocolException e) {            
         } catch (IOException e) {  }
