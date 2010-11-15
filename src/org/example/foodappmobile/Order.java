@@ -31,10 +31,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -50,10 +53,18 @@ public class Order extends Activity implements OnClickListener{
 	String[] desc;
 	/* Array di stringhe per i prezzi dei prodotti*/
 	String[] price;
+	/* Array di EditText per recuperare le quantità inserite*/
+	EditText[] qty;
 	/* Cookie usato per mantenere la sessione*/
 	Cookie mycookie = null;
 	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
 	HttpContext localContext = null;
+	/* Variabile che serve per contare quanti prodotti sono presenti nel carrello*/
+	int cont = 0;
+	/* Lista che serve per salvare i prodotti ordinati*/
+	List<Product> ordered = new ArrayList<Product>();
+	/* Oggetto Product che va inserito nella lista*/
+	Product tmpProd;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -62,15 +73,18 @@ public class Order extends Activity implements OnClickListener{
         
         result = callWebService(url);
         System.out.println(result);
-        //ordview = new OrderView(this, result);
-        //setContentView(ordview);
-        //ordview.requestFocus();
         
+        /* Definisco un LinearLayout per visualizzare gli elementi nella pagina*/
         LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setBackgroundResource(R.color.background);
         
-        /* Definisco una vista ScrollView per 'attaccargli' il LinearLayout in modo che tutti i prodotti vengano visualizzati*/
+        /* LinearLayout per visualizzare orizzontalmente una label per la quantità 
+         * e l'EditText per inserire la quantità richiesta*/
+        LinearLayout edit;
+                
+        /* Definisco una vista ScrollView per 'attaccargli' il LinearLayout in modo
+         *  che tutti i prodotti vengano visualizzati*/
         ScrollView sv = new ScrollView(this); 
                 
         ProductList prodList = null; //Variabile per salvare la lista di prodotti
@@ -113,6 +127,13 @@ public class Order extends Activity implements OnClickListener{
 		TextView[] prodDesc = new TextView[numProd];
 		/* Array di TextView per visualizzare i prezzi dei prodotti*/
 		TextView[] prodPrice = new TextView[numProd];
+		/* Array di TextView per visualizzare la quantità del prodotto*/
+		TextView[] prodQty = new TextView[numProd];
+		/* Array di EditText per inserire la quantità del prodotto*/
+		EditText[] editQty = new EditText[numProd];
+		/* Inizializzo l'array esterno che mi servirà per recuperare i valori
+		 * di quantità inseriti*/
+		qty = new EditText[numProd];
 		
 		/* Definisco una vista piccola per separare i vari prodotti*/
 		View[] sep = new View[numProd];
@@ -141,6 +162,18 @@ public class Order extends Activity implements OnClickListener{
 			prodPrice[i] = new TextView(this);
 			prodPrice[i].setText(price[i]);
 			ll.addView(prodPrice[i]);
+			/* Aggiungo un nuovo LinearLayout per visualizzare orizzontalmente 
+			 * la label della quantità e il campo per modificarla*/
+			edit = new LinearLayout(this);
+	        edit.setOrientation(LinearLayout.HORIZONTAL);
+			prodQty[i] = new TextView(this);
+			prodQty[i].setText("Quantità: ");
+			edit.addView(prodQty[i]);
+			editQty[i] = new EditText(this);
+			editQty[i].setText("1");
+			edit.addView(editQty[i]);
+			ll.addView(edit);
+			
 			btn[i] = new Button(this);
 			btn[i].setText("Aggiungi al carrello");
 			btn[i].setId(i);
@@ -156,9 +189,13 @@ public class Order extends Activity implements OnClickListener{
 			ll.addView(sep[i]);
 		} 
 		
+		/* Setto qty in modo che possa recuperare i valori all'esterno del metodo*/
+		qty = editQty;
+		
 		/* Aggiungo il LinearLayout alla ScrollView e poi la visualizzo */
 		sv.addView(ll);
 		setContentView(sv);
+		
     } //fine onCreate
     
     
@@ -180,6 +217,9 @@ public class Order extends Activity implements OnClickListener{
     public void onClick (View v) {
 		int id = v.getId();
 		//System.out.println("Cliccato il bottone "+ id);
+		/*Incremento il contatore di prodotti*/
+		cont++;
+		HttpResponse resp = null;
 		
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
     	// versione di HTTP 1.1; in questo modo la risposta è molto più performante
@@ -201,23 +241,33 @@ public class Order extends Activity implements OnClickListener{
     		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
     	}
     	
+    	/* Istanzio il prodotto selezionato per inserirlo nella lista*/
+    	tmpProd = new Product();
+    	tmpProd.setName(name[id]);
+    	tmpProd.setDescription(desc[id]);
+    	tmpProd.setPrice(price[id]);
+    	tmpProd.setQuantity(qty[id].getText().toString());
+    	/* Inserisco il prodotto nella lista*/
+    	ordered.add(tmpProd);
+    	
     	try {  
             // Aggiungo i parametri da passare con la richiesta POST 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);  
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
             nameValuePairs.add(new BasicNameValuePair("sku", name[id]));  
             nameValuePairs.add(new BasicNameValuePair("description", desc[id]));
             nameValuePairs.add(new BasicNameValuePair("price", price[id]));
+            nameValuePairs.add(new BasicNameValuePair("quantity", qty[id].getText().toString()));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
             // Execute HTTP Post Request
             if (localContext != null) {
             	HttpResponse response = httpclient.execute(httppost, localContext);
+            	resp = response;
             }
             else {
             	HttpResponse response = httpclient.execute(httppost);
+            	resp = response;
             }
-            // Se tutto va bene viene ritornato il codice 200
-            //System.out.println(response.getStatusLine().getStatusCode());
             
             /* Controllo se ci sono dei cookie nella risposta */
             if (mycookie == null) {
@@ -231,8 +281,32 @@ public class Order extends Activity implements OnClickListener{
             		}
             	}
             }
+            
+            /* Setto un AlertDialog per visualizzare un messaggio di corretto
+             * inserimento del prodotto nel carrello*/
+            if (resp != null) {
+            	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            	builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
+            		.setCancelable(false)
+            		.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+    					public void onClick(DialogInterface dialog, int id) {
+    						dialog.cancel();
+    					}
+    			});
+            	builder.show();
+            }
+            
+            /*Stampa di prova dei prodotti ordinati*/
+    		if (ordered != null) {
+    			for (int x=0; x < ordered.size(); x++) {
+    				System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
+    						+ " - " + ordered.get(x).getPrice() + " - " + ordered.get(x).getQuantity());
+    			}
+    		}
               
         } catch (ClientProtocolException e) {            
         } catch (IOException e) {  }
-	}
+           
+	} // Fine onClick
+    
 }
