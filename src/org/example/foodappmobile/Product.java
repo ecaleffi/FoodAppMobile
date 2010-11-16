@@ -1,5 +1,7 @@
 package org.example.foodappmobile;
 
+import java.text.DecimalFormat;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +11,7 @@ public class Product implements Parcelable{
 	private String description;
 	private String price;
 	private String quantity;
+	private String tot;
 	
 	public Product() {}
 	
@@ -28,6 +31,10 @@ public class Product implements Parcelable{
 		this.quantity = quantity;
 	}
 	
+	public void setTot (String tot) {
+		this.tot = tot;
+	}
+	
 	public String getName() { return name;}
 	
 	public String getDescription() { return description;}
@@ -35,6 +42,22 @@ public class Product implements Parcelable{
 	public String getPrice() { return price; }
 	
 	public String getQuantity() { return quantity; }
+	
+	public String getTot() { 
+		int qty = Integer.parseInt(quantity);
+		String pr = price;
+		pr = pr.replace(" EUR", "");
+		pr = pr.replace(",", ".");
+		double p = Double.parseDouble(pr);
+		double t = (qty * p);
+		DecimalFormat twoDec = new DecimalFormat("0.00");
+		tot = twoDec.format(t);
+		tot = "" + tot;
+		//tot = Double.toString(t);
+		tot = tot.replace(".", ",");
+		tot = tot + " EUR";
+		return tot; 
+	}
 	
 	public Product(Parcel in) {
 		readFromParcel(in);

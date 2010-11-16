@@ -81,6 +81,7 @@ public class Order extends Activity implements OnClickListener{
         /* LinearLayout per visualizzare orizzontalmente una label per la quantità 
          * e l'EditText per inserire la quantità richiesta*/
         LinearLayout edit;
+        /* LinearLayout per visualizzare il bottone per il carrello*/
         LinearLayout layCart;
                 
         /* Definisco una vista ScrollView per 'attaccargli' il LinearLayout in modo
@@ -226,13 +227,31 @@ public class Order extends Activity implements OnClickListener{
     	/*Recupero l'identificativo del bottone cliccato*/
 		int id = v.getId();
 		
-		if (id == 999) { 
-			Intent cart = new Intent(this, Cart.class);
-			
-			Bundle bundle = new Bundle();
-			bundle.putParcelableArrayList("orderedProducts", ordered);
-			cart.putExtras(bundle);
-			startActivity(cart);
+		if (id == 999) { 	// Id associato al pulsante per visualizzare il carrello
+			if (ordered.size() == 0) { 	// Controllo che sia stato selezionato almeno un prodotto
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        		builder.setMessage("Non hai selezionato alcun prodotto! Il carrello è vuoto.")
+        			.setCancelable(false)
+        			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+        				public void onClick(DialogInterface dialog, int id) {
+        					dialog.cancel();
+        				}
+        			});
+        		builder.show();
+			}
+			else {
+				/* Creo un nuovo Intent per avviare l'Activity associata al carrello*/
+				Intent cart = new Intent(this, Cart.class);
+				
+				/* Preparo i parametri da passare all'Activity*/
+				Bundle bundle = new Bundle();
+				bundle.putParcelableArrayList("orderedProducts", ordered);
+				bundle.putString(mycookie.getName(), mycookie.getValue());
+				cart.putExtras(bundle);
+				
+				/* Avvio l'Activity*/				
+				startActivity(cart);
+			}
 		}
 		
 		else {
