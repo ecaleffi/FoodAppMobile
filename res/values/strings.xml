@@ -28,4 +28,5 @@
     <string name="select_label">Selezione</string>
     <string name="prodlist_title">Lista dei Prodotti</string>
     <string name="order_title">Ordinazioni</string>
+    <string name="cart_title">Carrello</string>
 </resources>

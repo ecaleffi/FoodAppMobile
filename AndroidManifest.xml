@@ -29,6 +29,8 @@
         	android:label="@string/prodlist_title" />
         <activity android:name=".Order"
         	android:label="@string/order_title" />
+        <activity android:name=".Cart"
+        	android:label="@string/cart_title" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 

@@ -15,7 +15,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -33,7 +32,9 @@ import com.google.gson.GsonBuilder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -59,10 +60,8 @@ public class Order extends Activity implements OnClickListener{
 	Cookie mycookie = null;
 	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
 	HttpContext localContext = null;
-	/* Variabile che serve per contare quanti prodotti sono presenti nel carrello*/
-	int cont = 0;
 	/* Lista che serve per salvare i prodotti ordinati*/
-	List<Product> ordered = new ArrayList<Product>();
+	ArrayList<Product> ordered = new ArrayList<Product>();
 	/* Oggetto Product che va inserito nella lista*/
 	Product tmpProd;
 	
@@ -82,6 +81,7 @@ public class Order extends Activity implements OnClickListener{
         /* LinearLayout per visualizzare orizzontalmente una label per la quantità 
          * e l'EditText per inserire la quantità richiesta*/
         LinearLayout edit;
+        LinearLayout layCart;
                 
         /* Definisco una vista ScrollView per 'attaccargli' il LinearLayout in modo
          *  che tutti i prodotti vengano visualizzati*/
@@ -109,11 +109,8 @@ public class Order extends Activity implements OnClickListener{
 			System.out.println("Errore nella deserializzazione JSON");
 		}
 		
-		/* Ciclo che serve per contare il numero dei prodotti*/ 
-		for (Product prod : prodList.getProds()) {
-			numProd = numProd + 1;
-			//System.out.println(numProd);
-		}
+		/* Numero di prodotti presenti nella lista*/
+		numProd = prodList.getProds().size();
 		
 		/* Array di stringhe per i nomi dei prodotti*/
 		name = new String[numProd];
@@ -134,13 +131,13 @@ public class Order extends Activity implements OnClickListener{
 		/* Inizializzo l'array esterno che mi servirà per recuperare i valori
 		 * di quantità inseriti*/
 		qty = new EditText[numProd];
-		
 		/* Definisco una vista piccola per separare i vari prodotti*/
 		View[] sep = new View[numProd];
-		
 		/* Array di Button per creare bottoni che servono per aggiungere il relativo prodotto
 		 * nel carrello */
 		Button[] btn = new Button[numProd];
+		/* Button per visualizzare il carrello */
+		Button cart;
 		
 		/* Ciclo per inizializzare gli array di Stringhe */
 		int i=0;
@@ -188,6 +185,17 @@ public class Order extends Activity implements OnClickListener{
 			sep[i].setMinimumHeight(3);
 			ll.addView(sep[i]);
 		} 
+		layCart = new LinearLayout(this);
+		layCart.setGravity(Gravity.CENTER);
+		layCart.setPadding(5, 5, 5, 5);
+		cart = new Button(this);
+		cart.setText("Visualizza il carrello");
+		cart.setId(999);
+		cart.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT));
+		cart.setOnClickListener(this);
+		layCart.addView(cart);
+		ll.addView(layCart);
 		
 		/* Setto qty in modo che possa recuperare i valori all'esterno del metodo*/
 		qty = editQty;
@@ -215,97 +223,108 @@ public class Order extends Activity implements OnClickListener{
 	}
 
     public void onClick (View v) {
+    	/*Recupero l'identificativo del bottone cliccato*/
 		int id = v.getId();
-		//System.out.println("Cliccato il bottone "+ id);
-		/*Incremento il contatore di prodotti*/
-		cont++;
-		HttpResponse resp = null;
 		
-		//Serve per fare in modo che il metodo POST venga gestito tramite la 
-    	// versione di HTTP 1.1; in questo modo la risposta è molto più performante
-    	HttpParams params = new BasicHttpParams();
-    	params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+		if (id == 999) { 
+			Intent cart = new Intent(this, Cart.class);
+			
+			Bundle bundle = new Bundle();
+			bundle.putParcelableArrayList("orderedProducts", ordered);
+			cart.putExtras(bundle);
+			startActivity(cart);
+		}
+		
+		else {
+		
+			HttpResponse resp = null;
+		
+			//Serve per fare in modo che il metodo POST venga gestito tramite la 
+			// versione di HTTP 1.1; in questo modo la risposta è molto più performante
+			HttpParams params = new BasicHttpParams();
+			params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
     	
-    	//Crea un nuovo HttpClient e POST Header
-    	DefaultHttpClient httpclient = new DefaultHttpClient(params);
-    	HttpPost httppost = new HttpPost("http://192.168.2.6:3000/cart/add");
+			//Crea un nuovo HttpClient e POST Header
+			DefaultHttpClient httpclient = new DefaultHttpClient(params);
+			HttpPost httppost = new HttpPost("http://192.168.2.6:3000/cart/add");
     	
-    	if (mycookie != null) {
-    		// Creo un'istanza locale di CookieStore
-    		CookieStore cookieStore = new BasicCookieStore();
-    		cookieStore.addCookie(mycookie);
+			if (mycookie != null) {
+				// Creo un'istanza locale di CookieStore
+				CookieStore cookieStore = new BasicCookieStore();
+				cookieStore.addCookie(mycookie);
     	
-    		// Creo un context HTTP locale
-    		localContext = new BasicHttpContext();
-    		// Lego il cookie store al context locale
-    		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-    	}
+				// Creo un context HTTP locale
+				localContext = new BasicHttpContext();
+				// Lego il cookie store al context locale
+				localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+			}
     	
-    	/* Istanzio il prodotto selezionato per inserirlo nella lista*/
-    	tmpProd = new Product();
-    	tmpProd.setName(name[id]);
-    	tmpProd.setDescription(desc[id]);
-    	tmpProd.setPrice(price[id]);
-    	tmpProd.setQuantity(qty[id].getText().toString());
-    	/* Inserisco il prodotto nella lista*/
-    	ordered.add(tmpProd);
+			/* Istanzio il prodotto selezionato per inserirlo nella lista*/
+			tmpProd = new Product();
+			tmpProd.setName(name[id]);
+			tmpProd.setDescription(desc[id]);
+			tmpProd.setPrice(price[id]);
+			tmpProd.setQuantity(qty[id].getText().toString());
+			/* Inserisco il prodotto nella lista*/
+			ordered.add(tmpProd);
     	
-    	try {  
-            // Aggiungo i parametri da passare con la richiesta POST 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
-            nameValuePairs.add(new BasicNameValuePair("sku", name[id]));  
-            nameValuePairs.add(new BasicNameValuePair("description", desc[id]));
-            nameValuePairs.add(new BasicNameValuePair("price", price[id]));
-            nameValuePairs.add(new BasicNameValuePair("quantity", qty[id].getText().toString()));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+			try {  
+				// Aggiungo i parametri da passare con la richiesta POST 
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
+				nameValuePairs.add(new BasicNameValuePair("sku", name[id]));  
+				nameValuePairs.add(new BasicNameValuePair("description", desc[id]));
+				nameValuePairs.add(new BasicNameValuePair("price", price[id]));
+				nameValuePairs.add(new BasicNameValuePair("quantity", qty[id].getText().toString()));
+            	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
-            // Execute HTTP Post Request
-            if (localContext != null) {
-            	HttpResponse response = httpclient.execute(httppost, localContext);
-            	resp = response;
-            }
-            else {
-            	HttpResponse response = httpclient.execute(httppost);
-            	resp = response;
-            }
+            	// Execute HTTP Post Request
+            	if (localContext != null) {
+            		HttpResponse response = httpclient.execute(httppost, localContext);
+            		resp = response;
+            	}
+            	else {
+            		HttpResponse response = httpclient.execute(httppost);
+            		resp = response;
+            	}
             
-            /* Controllo se ci sono dei cookie nella risposta */
-            if (mycookie == null) {
-            	List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-            	mycookie = cookies.get(0);
-            	if (cookies.isEmpty()) {
-            		System.out.println("Nessun Cookie");
-            	} else {
-            		for (int i = 0; i < cookies.size(); i++) {
-            			System.out.println("- " + cookies.get(i).toString());
+            	/* Controllo se ci sono dei cookie nella risposta */
+            	if (mycookie == null) {
+            		List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+            		mycookie = cookies.get(0);
+            		if (cookies.isEmpty()) {
+            			System.out.println("Nessun Cookie");
+            		} else {
+            			for (int i = 0; i < cookies.size(); i++) {
+            				System.out.println("- " + cookies.get(i).toString());
+            			}
             		}
             	}
-            }
             
-            /* Setto un AlertDialog per visualizzare un messaggio di corretto
-             * inserimento del prodotto nel carrello*/
-            if (resp != null) {
-            	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            	builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
-            		.setCancelable(false)
-            		.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-    					public void onClick(DialogInterface dialog, int id) {
-    						dialog.cancel();
-    					}
-    			});
-            	builder.show();
-            }
+            	/* Setto un AlertDialog per visualizzare un messaggio di corretto
+            	 * inserimento del prodotto nel carrello*/
+            	if (resp != null) {
+            		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            		builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
+            			.setCancelable(false)
+            			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            				public void onClick(DialogInterface dialog, int id) {
+            					dialog.cancel();
+            				}
+            			});
+            		builder.show();
+            	}
             
-            /*Stampa di prova dei prodotti ordinati*/
-    		if (ordered != null) {
-    			for (int x=0; x < ordered.size(); x++) {
-    				System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
-    						+ " - " + ordered.get(x).getPrice() + " - " + ordered.get(x).getQuantity());
-    			}
-    		}
+            	/*Stampa di prova dei prodotti ordinati*/
+            	if (ordered != null) {
+            		for (int x=0; x < ordered.size(); x++) {
+            			System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
+            					+ " - " + ordered.get(x).getPrice() + " - " + ordered.get(x).getQuantity());
+            		}
+            	}
               
-        } catch (ClientProtocolException e) {            
-        } catch (IOException e) {  }
+			} catch (ClientProtocolException e) {            
+			} catch (IOException e) {  }
+		}
            
 	} // Fine onClick
     
