@@ -21,7 +21,8 @@
          android:id="@+id/prodlist_button"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
-         android:text="@string/prodlist_label" />
+         android:text="@string/prodlist_label"
+         android:layout_marginBottom="10dip" />
       <Button
          android:id="@+id/order_button"
          android:layout_width="fill_parent"

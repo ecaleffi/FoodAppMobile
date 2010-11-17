@@ -168,6 +168,8 @@ public class Order extends Activity implements OnClickListener{
 			prodQty[i].setText("Quantità: ");
 			edit.addView(prodQty[i]);
 			editQty[i] = new EditText(this);
+			editQty[i].setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT));
 			editQty[i].setText("1");
 			edit.addView(editQty[i]);
 			ll.addView(edit);

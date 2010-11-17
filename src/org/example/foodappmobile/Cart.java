@@ -10,7 +10,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -21,6 +20,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -37,13 +37,15 @@ public class Cart extends Activity implements OnClickListener{
 	HttpContext localContext = null;
 	String strCookieName = "foodapp_session";
     String strCookieValue;
+    HttpResponse resp;
+    ArrayList<Product> ordered;
 	
 	/** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
         Bundle b = getIntent().getExtras();
-        ArrayList<Product> ordered = b.getParcelableArrayList("orderedProducts");
+        ordered = b.getParcelableArrayList("orderedProducts");
         strCookieValue = b.getString(strCookieName);
         
         System.out.println(strCookieName + "=" + strCookieValue);
@@ -150,12 +152,11 @@ public class Cart extends Activity implements OnClickListener{
 		DefaultHttpClient httpclient = new DefaultHttpClient(params);
 		HttpPost httppost = new HttpPost("http://192.168.2.6:3000/checkout/");
 		
-		BasicClientCookie ck = new BasicClientCookie("foodapp_session", strCookieValue);
+		BasicClientCookie ck = new BasicClientCookie(strCookieName, strCookieValue);
 		ck.setPath("/");
 		ck.setDomain("192.168.2.6");
 		ck.setExpiryDate(null);
 		ck.setVersion(0);
-		ck.setValue(strCookieValue);
 		
 		System.out.println(ck.toString());
 		
@@ -169,8 +170,21 @@ public class Cart extends Activity implements OnClickListener{
 		
 		try {
 			HttpResponse response = httpclient.execute(httppost, localContext);
+			resp = response;
 		}	catch (ClientProtocolException e) { } 	
 			catch (IOException e) { }
+		
+		if (resp != null)  {
+			/* Creo l'intent e preparo i parametri da passare */
+			Intent check = new Intent(this, Checkout.class);
+			Bundle b = new Bundle();
+			b.putParcelableArrayList("orderedProducts", ordered);
+			b.putString(ck.getName(), ck.getValue());
+			check.putExtras(b);
+		
+			/* Avvio l'Activity*/				
+			startActivity(check);
+		}
     }
 
 }
