@@ -1,18 +1,42 @@
 package org.example.foodappmobile;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
-public class Cart extends Activity{
+public class Cart extends Activity implements OnClickListener{
+	
+	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
+	HttpContext localContext = null;
+	String strCookieName = "foodapp_session";
+    String strCookieValue;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -20,10 +44,9 @@ public class Cart extends Activity{
         super.onCreate(savedInstanceState);  
         Bundle b = getIntent().getExtras();
         ArrayList<Product> ordered = b.getParcelableArrayList("orderedProducts");
-        String strCookie = b.getString("foodapp_session");
-        strCookie = "foodapp_session="+strCookie;
+        strCookieValue = b.getString(strCookieName);
         
-        //System.out.println(strCookie);
+        System.out.println(strCookieName + "=" + strCookieValue);
         
         /*for (int x=0; x < ordered.size(); x++) {
 			System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
@@ -49,6 +72,9 @@ public class Cart extends Activity{
         TextView subTot;
         /* Vista piccola usata come separatore*/
         View[] sep = new View[numItems];
+        /* Bottone per effettuare il checkout*/
+        Button chk;
+        /* Stringhe e variabili per gestire totale e subtotale*/
         String strTotale;
         double totale;
         String strSubTotale;
@@ -95,12 +121,56 @@ public class Cart extends Activity{
         st.setGravity(Gravity.RIGHT);
         subTot = new TextView(this);
         subTot.setTextSize(18);
-        subTot.setText("Subtotale: " + strSubTotale);
+        subTot.setText("Subtotale: " + strSubTotale +"\n");
         st.addView(subTot);
         ll.addView(st);
+        LinearLayout bt = new LinearLayout(this);
+        bt.setOrientation(LinearLayout.HORIZONTAL);
+        bt.setGravity(Gravity.CENTER);
+        chk = new Button(this);
+        chk.setText("Checkout");
+        chk.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT));
+        chk.setOnClickListener(this);
+        bt.addView(chk);
+        ll.addView(bt);
         
         sv.addView(ll);
         setContentView(sv);
+    } //fine onCreate
+    
+    public void onClick (View v) {
+    	
+    	//Serve per fare in modo che il metodo POST venga gestito tramite la 
+		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
+		HttpParams params = new BasicHttpParams();
+		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+	
+		//Crea un nuovo HttpClient e POST Header
+		DefaultHttpClient httpclient = new DefaultHttpClient(params);
+		HttpPost httppost = new HttpPost("http://192.168.2.6:3000/checkout/");
+		
+		BasicClientCookie ck = new BasicClientCookie("foodapp_session", strCookieValue);
+		ck.setPath("/");
+		ck.setDomain("192.168.2.6");
+		ck.setExpiryDate(null);
+		ck.setVersion(0);
+		ck.setValue(strCookieValue);
+		
+		System.out.println(ck.toString());
+		
+		CookieStore cookieStore = new BasicCookieStore();
+		cookieStore.addCookie(ck);
+
+		// Creo un context HTTP locale
+		localContext = new BasicHttpContext();
+		// Lego il cookie store al context locale
+		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+		
+		try {
+			HttpResponse response = httpclient.execute(httppost, localContext);
+		}	catch (ClientProtocolException e) { } 	
+			catch (IOException e) { }
     }
 
 }
