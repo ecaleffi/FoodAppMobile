@@ -31,4 +31,13 @@
     <string name="cart_title">Carrello</string>
     <string name="checkout_label">Informazioni di Fatturazione/Spedizione</string>
     <string name="checkout_title">Checkout</string>
+    <string name="preview_title">Preview</string>
+    <string name="payment_title">Pagamento</string>
+    <string name="card_prompt">Scegli una Carta</string>
+    <string-array name="card_array">
+    	<item>Visa</item>
+    	<item>Mastercard</item>
+    	<item>American Express</item>
+    	<item>Discover</item>
+    </string-array>
 </resources>

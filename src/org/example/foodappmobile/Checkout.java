@@ -38,6 +38,9 @@ public class Checkout extends Activity{
 	HttpContext localContext = null;
 	ArrayList<Product> ordered;
 	HttpResponse resp;
+	/* Istanza della classe MyOrder da passare all'attività Preview
+	 * per visualizzare i dati dell'ordinazione*/
+	MyOrder mo;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -107,6 +110,31 @@ public class Checkout extends Activity{
     	final EditText txtShipToEmail = (EditText)findViewById(R.id.shiptoemail);
     	final EditText txtComments = (EditText)findViewById(R.id.comments);
     	
+    	/* Istanzio l'oggetto MyOrder da passare*/
+    	mo = new MyOrder();
+    	mo.setBillToFirstName(txtBillToFirstName.getText().toString());
+    	mo.setBillToLastName(txtBillToLastName.getText().toString());
+    	mo.setBillToAddress1(txtBillToAddress1.getText().toString());
+    	mo.setBillToCity(txtBillToCity.getText().toString());
+    	mo.setBillToState(txtBillToState.getText().toString());
+    	mo.setBillToZip(txtBillToZip.getText().toString());
+    	mo.setBillToCountry(txtBillToCountry.getText().toString());
+    	mo.setBillToDayPhone(txtBillToDayPhone.getText().toString());
+    	mo.setBillToNightPhone(txtBillToNightPhone.getText().toString());
+    	mo.setBillToFax(txtBillToFax.getText().toString());
+    	mo.setBillToEmail(txtBillToEmail.getText().toString());
+    	mo.setShipToFirstName(txtShipToFirstName.getText().toString());
+    	mo.setShipToLastName(txtShipToLastName.getText().toString());
+    	mo.setShipToAddress1(txtShipToAddress1.getText().toString());
+    	mo.setShipToCity(txtShipToCity.getText().toString());
+    	mo.setShipToState(txtShipToState.getText().toString());
+    	mo.setShipToZip(txtShipToZip.getText().toString());
+    	mo.setShipToCountry(txtShipToCountry.getText().toString());
+    	mo.setShipToDayPhone(txtShipToDayPhone.getText().toString());
+    	mo.setShipToNightPhone(txtShipToNightPhone.getText().toString());
+    	mo.setShipToFax(txtShipToFax.getText().toString());
+    	mo.setShipToEmail(txtShipToEmail.getText().toString());
+    	mo.setComments(txtComments.getText().toString());
     	
     	try {  
             // Aggiungo i parametri da passare con la richiesta POST 
@@ -146,8 +174,13 @@ public class Checkout extends Activity{
         } catch (ClientProtocolException e) {            
         } catch (IOException e) {  }
         
-        if (resp.getStatusLine().getStatusCode() == 302) {
+        if (resp.getStatusLine().getStatusCode() == 200) {
         	Intent prev = new Intent(this, Preview.class);
+        	Bundle b = new Bundle();
+        	b.putParcelableArrayList("orderedProducts", ordered);
+        	b.putParcelable("orderDetails", mo);
+			b.putString(ck.getName(), ck.getValue());
+			prev.putExtras(b);
         	startActivity(prev);
         }
         

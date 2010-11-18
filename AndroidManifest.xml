@@ -33,6 +33,10 @@
         	android:label="@string/cart_title" />
         <activity android:name=".Checkout"
         	android:label="@string/checkout_title" />
+        <activity android:name=".Preview"
+        	android:label="@string/preview_title" />
+        <activity android:name=".Payment"
+        	android:label="@string/payment_title" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:orientation="horizontal">
+   	<LinearLayout
+     	android:orientation="vertical"
+      	android:layout_height="wrap_content"
+      	android:layout_width="fill_parent" >
+      	<TextView
+        	android:text="Informazioni sul Pagamento"
+        	android:layout_height="wrap_content"
+         	android:layout_width="wrap_content"
+         	android:layout_gravity="center"
+         	android:layout_marginBottom="25dip"
+         	android:textSize="18sp" />
+    <TableLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:shrinkColumns="0">
+    	<TableRow>
+    		<TextView
+    			android:text="Nome sulla carta di credito:"
+    			android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"	/>
+         	<EditText
+         		android:id="@+id/ccname"
+         		android:layout_height="wrap_content"
+         		android:layout_width="fill_parent"
+         		android:layout_marginBottom="10dip"/>
+    	</TableRow>
+    	<TableRow>
+    		<TextView
+    			android:text="Tipo carta di credito:"
+    			android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"	/>
+         	<Spinner 
+        		android:id="@+id/spinner"
+        		android:layout_width="fill_parent"
+        		android:layout_height="wrap_content"
+        		android:prompt="@string/card_prompt"
+        		android:layout_marginBottom="10dip" />
+    	</TableRow>
+    	<TableRow>
+    		<TextView
+    			android:text="Numero carta di credito:"
+    			android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"	/>
+         	<EditText 
+        		android:id="@+id/ccn"
+        		android:layout_width="fill_parent"
+        		android:layout_height="wrap_content"
+        		android:layout_marginBottom="10dip" />
+    	</TableRow>
+    	<TableRow>
+    		<TextView
+    			android:text="Scadenza carta di credito:"
+    			android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"	/>
+         	<LinearLayout
+         		android:orientation="horizontal"
+      			android:layout_height="wrap_content"
+      			android:layout_width="fill_parent">
+         		<EditText
+         			android:id="@+id/ccm"
+         			android:text="  "
+         			android:maxEms="2"
+         			android:layout_height="wrap_content"
+         			android:layout_width="wrap_content"/>
+         		<TextView
+         			android:text="/"
+         			android:layout_height="wrap_content"
+         			android:layout_width="wrap_content"/>
+         		<EditText
+         			android:id="@+id/ccy"
+         			android:text="  "
+         			android:maxEms="2"
+         			android:layout_height="wrap_content"
+         			android:layout_width="wrap_content"
+         			android:layout_marginBottom="10dip"/>	
+         	</LinearLayout>
+    	</TableRow>
+    	<TableRow>
+    		<TextView
+    			android:text="Codice di sicurezza:"
+    			android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"	/>
+         	<EditText
+         		android:id="@+id/ccvn"
+         		android:text="    "
+         		android:maxEms="4"
+         		android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"
+         		android:layout_marginBottom="10dip"/>
+    	</TableRow>
+    	<Button
+    		android:id="@+id/complete_order"
+    		android:text="Completa Ordine"
+    		android:layout_height="wrap_content"
+         	android:layout_width="wrap_content"/>
+    </TableLayout>	
+	</LinearLayout>
+</LinearLayout>
