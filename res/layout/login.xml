@@ -59,8 +59,8 @@
     			android:id="@+id/submit_login"
     			android:text="Login"
     			android:layout_height="wrap_content"
-    			android:layout_width="wrap_content"
-    			android:padding="25dip"/>
+    			android:layout_width="120dip"
+    			android:padding="20dip"/>
     	</LinearLayout>
 	
 	</LinearLayout>

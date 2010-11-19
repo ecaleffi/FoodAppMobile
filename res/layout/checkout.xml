@@ -45,7 +45,7 @@
     			<EditText
     				android:id="@+id/billtoname"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -56,7 +56,7 @@
     			<EditText
     				android:id="@+id/billtosurname"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -67,7 +67,7 @@
     			<EditText
     				android:id="@+id/billtoaddress"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -78,7 +78,7 @@
     			<EditText
     				android:id="@+id/billtocity"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -89,7 +89,7 @@
     			<EditText
     				android:id="@+id/billtostate"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -100,7 +100,7 @@
     			<EditText
     				android:id="@+id/billtozip"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -111,7 +111,7 @@
     			<EditText
     				android:id="@+id/billtocountry"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -122,7 +122,7 @@
     			<EditText
     				android:id="@+id/billtoday_phone"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -133,7 +133,7 @@
     			<EditText
     				android:id="@+id/billtonight_phone"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -144,7 +144,7 @@
     			<EditText
     				android:id="@+id/billtofax"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -155,7 +155,7 @@
     			<EditText
     				android:id="@+id/billtoemail"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="25dip"/>
     		</TableRow>
         </TableLayout>
@@ -188,7 +188,7 @@
     			<EditText
     				android:id="@+id/shiptoname"
     				android:layout_height="wrap_content"
-    				android:layout_width="fill_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -199,7 +199,7 @@
     			<EditText
     				android:id="@+id/shiptosurname"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -210,7 +210,7 @@
     			<EditText
     				android:id="@+id/shiptoaddress"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -221,7 +221,7 @@
     			<EditText
     				android:id="@+id/shiptocity"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -232,7 +232,7 @@
     			<EditText
     				android:id="@+id/shiptostate"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -243,7 +243,7 @@
     			<EditText
     				android:id="@+id/shiptozip"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -254,7 +254,7 @@
     			<EditText
     				android:id="@+id/shiptocountry"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -265,7 +265,7 @@
     			<EditText
     				android:id="@+id/shiptoday_phone"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -276,7 +276,7 @@
     			<EditText
     				android:id="@+id/shiptonight_phone"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -287,7 +287,7 @@
     			<EditText
     				android:id="@+id/shiptofax"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -298,7 +298,7 @@
     			<EditText
     				android:id="@+id/shiptoemail"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="10dip"/>
     		</TableRow>
     		<TableRow>
@@ -310,7 +310,7 @@
     				android:id="@+id/comments"
     				android:lines="6"
     				android:layout_height="wrap_content"
-    				android:layout_width="match_parent"
+    				android:layout_width="150px"
     				android:layout_marginBottom="25dip"/>
     		</TableRow>
         </TableLayout>

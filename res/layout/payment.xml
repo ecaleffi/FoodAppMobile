@@ -17,10 +17,10 @@
          	android:layout_marginBottom="25dip"
          	android:textSize="18sp" />
     <TableLayout
-    	android:layout_width="fill_parent"
-    	android:layout_height="match_parent"
-    	android:shrinkColumns="0"
-    	android:stretchColumns="1">
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:stretchColumns="1"
+    	android:shrinkColumns="0">
     	<TableRow>
     		<TextView
     			android:text="Nome sulla carta di credito:"
@@ -29,7 +29,8 @@
          	<EditText
          		android:id="@+id/ccname"
          		android:layout_height="wrap_content"
-         		android:layout_width="match_parent"
+         		android:layout_width="180px"
+         		android:maxLines="1"
          		android:layout_marginBottom="10dip"/>
     	</TableRow>
     	<TableRow>
@@ -51,7 +52,9 @@
          		android:layout_width="wrap_content"	/>
          	<EditText 
         		android:id="@+id/ccn"
-        		android:layout_width="match_parent"
+        		android:layout_width="50dip"
+         		android:maxLines="1"
+         		android:maxLength="16"
         		android:layout_height="wrap_content"
         		android:layout_marginBottom="10dip" />
     	</TableRow>
@@ -68,6 +71,7 @@
          			android:id="@+id/ccm"
          			android:maxEms="2"
          			android:maxLines="1"
+         			android:maxLength="2"
          			android:layout_height="wrap_content"
          			android:layout_width="wrap_content"/>
          		<TextView
@@ -78,6 +82,7 @@
          			android:id="@+id/ccy"
          			android:maxEms="2"
          			android:maxLines="1"
+         			android:maxLength="2"
          			android:layout_height="wrap_content"
          			android:layout_width="wrap_content"
          			android:layout_marginBottom="10dip"/>	
@@ -92,8 +97,9 @@
          		android:id="@+id/ccvn"
          		android:maxEms="4"
          		android:maxLines="1"
+         		android:maxLength="4"
          		android:layout_height="wrap_content"
-         		android:layout_width="wrap_content"
+         		android:layout_width="50dip"
          		android:layout_marginBottom="10dip"/>
     	</TableRow>
     	<Button
