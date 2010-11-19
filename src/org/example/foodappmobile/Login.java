@@ -8,9 +8,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class Login extends Activity{
+	
+	Cookie mycookie;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -49,7 +51,7 @@ public class Login extends Activity{
     	params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
     	
     	//Crea un nuovo HttpClient e POST Header
-    	HttpClient httpclient = new DefaultHttpClient(params);
+    	DefaultHttpClient httpclient = new DefaultHttpClient(params);
     	HttpPost httppost = new HttpPost("http://192.168.2.6:3000/people/login");
     	
     	final EditText txtName = (EditText)findViewById(R.id.login_name);
@@ -71,6 +73,16 @@ public class Login extends Activity{
         } catch (ClientProtocolException e) {            
         } catch (IOException e) {  }
         
+        List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+        if (cookies.isEmpty()) {
+			System.out.println("Nessun Cookie");
+		} else {
+			mycookie = cookies.get(0);
+			for (int i = 0; i < cookies.size(); i++) {
+				System.out.println("- " + cookies.get(i).toString());
+			}
+		}
+        
         //Controllo il valore del codice della risposta
         if (respCode == 401) {
         	Intent loginFailed = new Intent(this, LoginFailed.class);
@@ -78,6 +90,9 @@ public class Login extends Activity{
         }
         if (respCode == 200) {
         	Intent select = new Intent(this, Select.class);
+        	Bundle bundle = new Bundle();
+			bundle.putString(mycookie.getName(), mycookie.getValue());
+			select.putExtras(bundle);
         	startActivity(select);
         	
         }

@@ -18,6 +18,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
@@ -56,19 +57,22 @@ public class Order extends Activity implements OnClickListener{
 	String[] price;
 	/* Array di EditText per recuperare le quantità inserite*/
 	EditText[] qty;
-	/* Cookie usato per mantenere la sessione*/
-	Cookie mycookie = null;
 	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
 	HttpContext localContext = null;
 	/* Lista che serve per salvare i prodotti ordinati*/
 	ArrayList<Product> ordered = new ArrayList<Product>();
 	/* Oggetto Product che va inserito nella lista*/
 	Product tmpProd;
+	String strCookieName = "foodapp_session";
+	String strCookieValue;
 	
 	/** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
+        
+        Bundle b = getIntent().getExtras();
+        strCookieValue = b.getString(strCookieName);
         
         result = callWebService(url);
         System.out.println(result);
@@ -248,7 +252,7 @@ public class Order extends Activity implements OnClickListener{
 				/* Preparo i parametri da passare all'Activity*/
 				Bundle bundle = new Bundle();
 				bundle.putParcelableArrayList("orderedProducts", ordered);
-				bundle.putString(mycookie.getName(), mycookie.getValue());
+				bundle.putString(strCookieName, strCookieValue);
 				cart.putExtras(bundle);
 				
 				/* Avvio l'Activity*/				
@@ -269,16 +273,19 @@ public class Order extends Activity implements OnClickListener{
 			DefaultHttpClient httpclient = new DefaultHttpClient(params);
 			HttpPost httppost = new HttpPost("http://192.168.2.6:3000/cart/add");
     	
-			if (mycookie != null) {
-				// Creo un'istanza locale di CookieStore
-				CookieStore cookieStore = new BasicCookieStore();
-				cookieStore.addCookie(mycookie);
-    	
-				// Creo un context HTTP locale
-				localContext = new BasicHttpContext();
-				// Lego il cookie store al context locale
-				localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-			}
+			BasicClientCookie ck = new BasicClientCookie(strCookieName, strCookieValue);
+			ck.setPath("/");
+			ck.setDomain("192.168.2.6");
+			ck.setExpiryDate(null);
+			ck.setVersion(0);
+			
+			CookieStore cookieStore = new BasicCookieStore();
+			cookieStore.addCookie(ck);
+
+			// Creo un context HTTP locale
+			localContext = new BasicHttpContext();
+			// Lego il cookie store al context locale
+			localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
     	
 			/* Istanzio il prodotto selezionato per inserirlo nella lista*/
 			tmpProd = new Product();
@@ -308,16 +315,12 @@ public class Order extends Activity implements OnClickListener{
             		resp = response;
             	}
             
-            	/* Controllo se ci sono dei cookie nella risposta */
-            	if (mycookie == null) {
-            		List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-            		mycookie = cookies.get(0);
-            		if (cookies.isEmpty()) {
-            			System.out.println("Nessun Cookie");
-            		} else {
-            			for (int i = 0; i < cookies.size(); i++) {
-            				System.out.println("- " + cookies.get(i).toString());
-            			}
+            	List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+            	if (cookies.isEmpty()) {
+            		System.out.println("Nessun Cookie");
+            	} else {
+            		for (int i = 0; i < cookies.size(); i++) {
+            			System.out.println("- " + cookies.get(i).toString());
             		}
             	}
             

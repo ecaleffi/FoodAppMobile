@@ -8,11 +8,18 @@ import android.view.View.OnClickListener;
 
 public class Select extends Activity implements OnClickListener {
 	
+	String strCookieName = "foodapp_session";
+	String strCookieValue;
+	
 	/** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
         setContentView(R.layout.select);
+        
+        /* Recupero i valori passati come parametro dall'attività chiamante*/
+        Bundle b = getIntent().getExtras();
+        strCookieValue = b.getString(strCookieName);
         
         View listButton = findViewById(R.id.prodlist_button);
         listButton.setOnClickListener(this);
@@ -29,6 +36,9 @@ public class Select extends Activity implements OnClickListener {
         	
         	case R.id.order_button:
         		Intent order = new Intent(this, Order.class);
+        		Bundle bundle = new Bundle();
+				bundle.putString(strCookieName, strCookieValue);
+				order.putExtras(bundle);
         		startActivity(order);
         		break;
         }

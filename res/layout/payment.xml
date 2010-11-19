@@ -18,8 +18,9 @@
          	android:textSize="18sp" />
     <TableLayout
     	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-    	android:shrinkColumns="0">
+    	android:layout_height="match_parent"
+    	android:shrinkColumns="0"
+    	android:stretchColumns="1">
     	<TableRow>
     		<TextView
     			android:text="Nome sulla carta di credito:"
@@ -28,7 +29,7 @@
          	<EditText
          		android:id="@+id/ccname"
          		android:layout_height="wrap_content"
-         		android:layout_width="fill_parent"
+         		android:layout_width="match_parent"
          		android:layout_marginBottom="10dip"/>
     	</TableRow>
     	<TableRow>
@@ -38,7 +39,7 @@
          		android:layout_width="wrap_content"	/>
          	<Spinner 
         		android:id="@+id/spinner"
-        		android:layout_width="fill_parent"
+        		android:layout_width="match_parent"
         		android:layout_height="wrap_content"
         		android:prompt="@string/card_prompt"
         		android:layout_marginBottom="10dip" />
@@ -50,7 +51,7 @@
          		android:layout_width="wrap_content"	/>
          	<EditText 
         		android:id="@+id/ccn"
-        		android:layout_width="fill_parent"
+        		android:layout_width="match_parent"
         		android:layout_height="wrap_content"
         		android:layout_marginBottom="10dip" />
     	</TableRow>
@@ -65,8 +66,8 @@
       			android:layout_width="fill_parent">
          		<EditText
          			android:id="@+id/ccm"
-         			android:text="  "
          			android:maxEms="2"
+         			android:maxLines="1"
          			android:layout_height="wrap_content"
          			android:layout_width="wrap_content"/>
          		<TextView
@@ -75,8 +76,8 @@
          			android:layout_width="wrap_content"/>
          		<EditText
          			android:id="@+id/ccy"
-         			android:text="  "
          			android:maxEms="2"
+         			android:maxLines="1"
          			android:layout_height="wrap_content"
          			android:layout_width="wrap_content"
          			android:layout_marginBottom="10dip"/>	
@@ -89,8 +90,8 @@
          		android:layout_width="wrap_content"	/>
          	<EditText
          		android:id="@+id/ccvn"
-         		android:text="    "
          		android:maxEms="4"
+         		android:maxLines="1"
          		android:layout_height="wrap_content"
          		android:layout_width="wrap_content"
          		android:layout_marginBottom="10dip"/>
