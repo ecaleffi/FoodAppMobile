@@ -24,6 +24,8 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -110,80 +112,106 @@ public class Checkout extends Activity{
     	final EditText txtShipToEmail = (EditText)findViewById(R.id.shiptoemail);
     	final EditText txtComments = (EditText)findViewById(R.id.comments);
     	
-    	/* Istanzio l'oggetto MyOrder da passare*/
-    	mo = new MyOrder();
-    	mo.setBillToFirstName(txtBillToFirstName.getText().toString());
-    	mo.setBillToLastName(txtBillToLastName.getText().toString());
-    	mo.setBillToAddress1(txtBillToAddress1.getText().toString());
-    	mo.setBillToCity(txtBillToCity.getText().toString());
-    	mo.setBillToState(txtBillToState.getText().toString());
-    	mo.setBillToZip(txtBillToZip.getText().toString());
-    	mo.setBillToCountry(txtBillToCountry.getText().toString());
-    	mo.setBillToDayPhone(txtBillToDayPhone.getText().toString());
-    	mo.setBillToNightPhone(txtBillToNightPhone.getText().toString());
-    	mo.setBillToFax(txtBillToFax.getText().toString());
-    	mo.setBillToEmail(txtBillToEmail.getText().toString());
-    	mo.setShipToFirstName(txtShipToFirstName.getText().toString());
-    	mo.setShipToLastName(txtShipToLastName.getText().toString());
-    	mo.setShipToAddress1(txtShipToAddress1.getText().toString());
-    	mo.setShipToCity(txtShipToCity.getText().toString());
-    	mo.setShipToState(txtShipToState.getText().toString());
-    	mo.setShipToZip(txtShipToZip.getText().toString());
-    	mo.setShipToCountry(txtShipToCountry.getText().toString());
-    	mo.setShipToDayPhone(txtShipToDayPhone.getText().toString());
-    	mo.setShipToNightPhone(txtShipToNightPhone.getText().toString());
-    	mo.setShipToFax(txtShipToFax.getText().toString());
-    	mo.setShipToEmail(txtShipToEmail.getText().toString());
-    	mo.setComments(txtComments.getText().toString());
+    	/* Validazione dei campi inseriti dall'utente: controllo che i campi necessari per creare un ordine
+    	 * siano tutti presenti*/
+    	if (txtBillToFirstName.getText().toString().equals("") || txtBillToLastName.getText().toString().equals("") ||
+    			txtBillToAddress1.getText().toString().equals("") || txtBillToCity.getText().toString().equals("") ||
+    			txtBillToState.getText().toString().equals("") || txtBillToZip.getText().toString().equals("") ||
+    			txtBillToCountry.getText().toString().equals("") || txtBillToEmail.getText().toString().equals("") ||
+    			txtShipToFirstName.getText().toString().equals("") || txtShipToLastName.getText().toString().equals("") ||
+    			txtShipToAddress1.getText().toString().equals("") || txtShipToCity.getText().toString().equals("") ||
+    			txtShipToState.getText().toString().equals("") || txtShipToZip.getText().toString().equals("") ||
+    			txtShipToCountry.getText().toString().equals("") || txtShipToEmail.getText().toString().equals("")) {
+    		AlertDialog.Builder notBlank = new AlertDialog.Builder(this);
+    		notBlank.setMessage("I campi Nome, Cognome, Indirizzo, Città, Regione, CAP, Stato ed Email sia della" +
+    				" fatturazione che della spedizione non possono essere lasciati vuoti.")
+    			.setCancelable(false)
+    			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int id) {
+    					dialog.cancel();
+    				}
+    			});
+    		notBlank.show();	
+    	}
     	
-    	try {  
-            // Aggiungo i parametri da passare con la richiesta POST 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(23);  
-            nameValuePairs.add(new BasicNameValuePair("billtofirstname", txtBillToFirstName.getText().toString()));  
-            nameValuePairs.add(new BasicNameValuePair("billtolastname", txtBillToLastName.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtoaddress1", txtBillToAddress1.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtocity", txtBillToCity.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtostate", txtBillToState.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtozip", txtBillToZip.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtocountry", txtBillToCountry.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtodayphone", txtBillToDayPhone.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtonightphone", txtBillToNightPhone.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtofax", txtBillToFax.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("billtoemail", txtBillToEmail.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptofirstname", txtShipToFirstName.getText().toString()));  
-            nameValuePairs.add(new BasicNameValuePair("shiptolastname", txtShipToLastName.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptoaddress1", txtShipToAddress1.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptocity", txtShipToCity.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptostate", txtShipToState.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptozip", txtShipToZip.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptocountry", txtShipToCountry.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptodayphone", txtShipToDayPhone.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptonightphone", txtShipToNightPhone.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptofax", txtShipToFax.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("shiptoemail", txtShipToEmail.getText().toString()));
-            nameValuePairs.add(new BasicNameValuePair("comments", txtComments.getText().toString()));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+    	else { //La validazione è passata
+    	
+    		/* Istanzio l'oggetto MyOrder da passare*/
+    		mo = new MyOrder();
+    		mo.setBillToFirstName(txtBillToFirstName.getText().toString());
+    		mo.setBillToLastName(txtBillToLastName.getText().toString());
+    		mo.setBillToAddress1(txtBillToAddress1.getText().toString());
+    		mo.setBillToCity(txtBillToCity.getText().toString());
+    		mo.setBillToState(txtBillToState.getText().toString());
+    		mo.setBillToZip(txtBillToZip.getText().toString());
+    		mo.setBillToCountry(txtBillToCountry.getText().toString());
+    		mo.setBillToDayPhone(txtBillToDayPhone.getText().toString());
+    		mo.setBillToNightPhone(txtBillToNightPhone.getText().toString());
+    		mo.setBillToFax(txtBillToFax.getText().toString());
+    		mo.setBillToEmail(txtBillToEmail.getText().toString());
+    		mo.setShipToFirstName(txtShipToFirstName.getText().toString());
+    		mo.setShipToLastName(txtShipToLastName.getText().toString());
+    		mo.setShipToAddress1(txtShipToAddress1.getText().toString());
+    		mo.setShipToCity(txtShipToCity.getText().toString());
+    		mo.setShipToState(txtShipToState.getText().toString());
+    		mo.setShipToZip(txtShipToZip.getText().toString());
+    		mo.setShipToCountry(txtShipToCountry.getText().toString());
+    		mo.setShipToDayPhone(txtShipToDayPhone.getText().toString());
+    		mo.setShipToNightPhone(txtShipToNightPhone.getText().toString());
+    		mo.setShipToFax(txtShipToFax.getText().toString());
+    		mo.setShipToEmail(txtShipToEmail.getText().toString());
+    		mo.setComments(txtComments.getText().toString());
+    	
+    		try {  
+    			// Aggiungo i parametri da passare con la richiesta POST 
+    			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(23);  
+    			nameValuePairs.add(new BasicNameValuePair("billtofirstname", txtBillToFirstName.getText().toString()));  
+    			nameValuePairs.add(new BasicNameValuePair("billtolastname", txtBillToLastName.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtoaddress1", txtBillToAddress1.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtocity", txtBillToCity.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtostate", txtBillToState.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtozip", txtBillToZip.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtocountry", txtBillToCountry.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtodayphone", txtBillToDayPhone.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtonightphone", txtBillToNightPhone.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtofax", txtBillToFax.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("billtoemail", txtBillToEmail.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptofirstname", txtShipToFirstName.getText().toString()));  
+    			nameValuePairs.add(new BasicNameValuePair("shiptolastname", txtShipToLastName.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptoaddress1", txtShipToAddress1.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptocity", txtShipToCity.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptostate", txtShipToState.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptozip", txtShipToZip.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptocountry", txtShipToCountry.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptodayphone", txtShipToDayPhone.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptonightphone", txtShipToNightPhone.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptofax", txtShipToFax.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("shiptoemail", txtShipToEmail.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("comments", txtComments.getText().toString()));
+    			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
-            // Execute HTTP Post Request  
-            HttpResponse response = httpclient.execute(httppost, localContext);
-            resp = response;
-            // Se tutto va bene viene ritornato il codice 200
-            System.out.println(response.getStatusLine().getStatusCode());
-            //respCode = response.getStatusLine().getStatusCode();
+    			// Execute HTTP Post Request  
+    			HttpResponse response = httpclient.execute(httppost, localContext);
+    			resp = response;
+    			// Se tutto va bene viene ritornato il codice 200
+    			System.out.println(response.getStatusLine().getStatusCode());
+    			//respCode = response.getStatusLine().getStatusCode();
               
-        } catch (ClientProtocolException e) {            
-        } catch (IOException e) {  }
+    		} catch (ClientProtocolException e) {            
+    		} catch (IOException e) {  }
         
-        if (resp.getStatusLine().getStatusCode() == 200) {
-        	Intent prev = new Intent(this, Preview.class);
-        	Bundle b = new Bundle();
-        	b.putParcelableArrayList("orderedProducts", ordered);
-        	b.putParcelable("orderDetails", mo);
-			b.putString(ck.getName(), ck.getValue());
-			prev.putExtras(b);
-        	startActivity(prev);
-        }
+    		if (resp.getStatusLine().getStatusCode() == 200) {
+    			Intent prev = new Intent(this, Preview.class);
+    			Bundle b = new Bundle();
+    			b.putParcelableArrayList("orderedProducts", ordered);
+    			b.putParcelable("orderDetails", mo);
+    			b.putString(ck.getName(), ck.getValue());
+    			prev.putExtras(b);
+    			startActivity(prev);
+    		}
+    
+    	} //fine else
         
-    }
+    } //fine postData()
 
 }

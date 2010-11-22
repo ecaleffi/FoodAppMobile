@@ -3,6 +3,8 @@ package org.example.foodappmobile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -23,6 +25,9 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -111,22 +116,123 @@ public class Payment extends Activity {
     	final EditText txtccm = (EditText)findViewById(R.id.ccm);
     	final EditText txtccy = (EditText)findViewById(R.id.ccy);
     	final EditText txtccvn = (EditText)findViewById(R.id.ccvn);
+    	
+    	/* Eseguo la validazione dei campi inseriti dall'utente tramite regex*/
+    	/* Creo un array di stringhe con i possibili errori*/
+    	String[] err = new String[10];
+    	err[0] = "Il campo Nome sulla carta di credito non può essere lasciato vuoto";
+    	err[1] = "Il numero della carta di credito deve contenere solo cifre";
+    	err[2] = "Il numero della carta di credito deve contenere da 12 a 16 cifre";
+    	err[3] = "Il mese di scadenza della carta deve contenere solo cifre";
+    	err[4] = "Il mese di scadenza della carta deve contenere 1 o 2 cifre";
+    	err[5] = "Il mese di scadenza della carta deve essere un numero da 1 a 12";
+    	err[6] = "L'anno di scadenza della carta deve contenere solo cifre";
+    	err[7] = "L'anno di scadenza della carta deve contenere 2 cifre";
+    	err[8] = "Il codice di sicurezza della carta deve contenere solo cifre";
+    	err[9] = "Il codice di sicurezza della carta deve contenere 3 o 4 cifre";
+    	/* Serve per verificare quali errori si sono verificati*/
+    	boolean[] errId = new boolean[10];
+    	/* Inizializzo l'array*/
+    	for (int j=0; j<10; j++) {
+    		errId[j] = false;
+    	}
+    	
+    	Pattern patNumber = Pattern.compile("\\d{12,16}");
+    	/* Fa match con una stringa che contiene un qualsiasi carattere che non sia un numero*/
+    	Pattern onlyNumber = Pattern.compile("\\D");
+    	Pattern patMonth = Pattern.compile("\\d{1,2}");
+    	Pattern patYear = Pattern.compile("\\d{2}");
+    	Pattern patVnumb = Pattern.compile("\\d{3,4}");
+    	Matcher matNumber = patNumber.matcher(txtccn.getText().toString());
+    	Matcher matMonth = patMonth.matcher(txtccm.getText().toString());
+    	int month = 0;
+    	if ( !txtccm.getText().toString().equals("")) {
+    		month = Integer.parseInt(txtccm.getText().toString());
+    	}
+    	Matcher matYear = patYear.matcher(txtccy.getText().toString());
+    	Matcher matVnumb = patVnumb.matcher(txtccvn.getText().toString());
+    	Matcher onlyNumberccn = onlyNumber.matcher(txtccn.getText().toString());
+    	Matcher onlyNumberccm = onlyNumber.matcher(txtccm.getText().toString());
+    	Matcher onlyNumberccy = onlyNumber.matcher(txtccy.getText().toString());
+    	Matcher onlyNumberccvn = onlyNumber.matcher(txtccvn.getText().toString());
+    	
+    	if (txtccname.getText().toString().equals("")) {
+    		errId[0] = true;
+    	}
+    	if (onlyNumberccn.find()) {
+    		errId[1] = true;
+    	}
+    	if (!matNumber.find()) {
+    		errId[2] = true;
+    	}
+    	if (onlyNumberccm.find()) {
+    		errId[3] = true;
+    	}
+    	if (!matMonth.find()) {
+    		errId[4] = true;
+    	}
+    	if ((!(month <= 12)) || (!(month >= 1))) {
+    		errId[5] = true;
+    	}
+    	if (onlyNumberccy.find()) {
+    		errId[6] = true;
+    	}
+    	if(!matYear.find()) {
+    		errId[7] = true;
+    	}
+    	if(onlyNumberccvn.find()) {
+    		errId[8] = true;
+    	}
+    	if(!(matVnumb.find())) {
+    		errId[9] = true;
+    	}
+    	
+    	boolean trovato_err = false;
+    	for (int j=0; j<10; j++) {
+    		if (errId[j] == true)
+    			trovato_err = true;
+    	}
+    	if ( trovato_err ) {
+    		String errMsg = "Si sono verificati i seguenti errori: ";
+    		for (int j=0; j<10; j++) {
+    			if (errId[j] == true) {
+    				errMsg = errMsg + "\n" + err[j];
+    			}
+    		}
+    		AlertDialog.Builder errVal = new AlertDialog.Builder(this);
+    		errVal.setMessage(errMsg)
+    			.setCancelable(false)
+    			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int id) {
+    					dialog.cancel();
+    				}
+    			});
+    		errVal.show();
+    	}
+    	
+    	else { //Se la validazione passa, esegui la richiesta POST
 		
-		try {  
-			// Aggiungo i parametri da passare con la richiesta POST 
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-			nameValuePairs.add(new BasicNameValuePair("ccname", txtccname.getText().toString()));  
-			nameValuePairs.add(new BasicNameValuePair("cctype", selectedCard));
-			nameValuePairs.add(new BasicNameValuePair("ccn", txtccn.getText().toString()));
-			nameValuePairs.add(new BasicNameValuePair("ccm", txtccm.getText().toString()));
-			nameValuePairs.add(new BasicNameValuePair("ccy", txtccy.getText().toString()));
-			nameValuePairs.add(new BasicNameValuePair("ccvn", txtccvn.getText().toString()));
-        	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+    		try {  
+    			// Aggiungo i parametri da passare con la richiesta POST 
+    			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
+    			nameValuePairs.add(new BasicNameValuePair("ccname", txtccname.getText().toString()));  
+    			nameValuePairs.add(new BasicNameValuePair("cctype", selectedCard));
+    			nameValuePairs.add(new BasicNameValuePair("ccn", txtccn.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("ccm", txtccm.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("ccy", txtccy.getText().toString()));
+    			nameValuePairs.add(new BasicNameValuePair("ccvn", txtccvn.getText().toString()));
+    			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
-			HttpResponse response = httpclient.execute(httppost, localContext);
-			resp = response;
-		} catch (ClientProtocolException e) {            
-		} catch (IOException e) {  }
+    			HttpResponse response = httpclient.execute(httppost, localContext);
+    			resp = response;
+    		} catch (ClientProtocolException e) {            
+    		} catch (IOException e) {  }
+		
+    		if (resp != null) {
+    			Intent ordComp = new Intent(this, OrderComplete.class);
+    			startActivity(ordComp);
+    		}
+    	}
     	
     }
 

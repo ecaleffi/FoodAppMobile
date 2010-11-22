@@ -69,9 +69,10 @@ public final class R {
         public static final int login=0x7f030002;
         public static final int loginfailed=0x7f030003;
         public static final int main=0x7f030004;
-        public static final int payment=0x7f030005;
-        public static final int posterr=0x7f030006;
-        public static final int select=0x7f030007;
+        public static final int ordercomplete=0x7f030005;
+        public static final int payment=0x7f030006;
+        public static final int posterr=0x7f030007;
+        public static final int select=0x7f030008;
     }
     public static final class string {
         public static final int about_label=0x7f050004;
@@ -91,6 +92,7 @@ public final class R {
         public static final int main_title=0x7f050002;
         public static final int order_label=0x7f05000f;
         public static final int order_title=0x7f050012;
+        public static final int ordercomplete_title=0x7f050019;
         public static final int payment_title=0x7f050017;
         public static final int posterr=0x7f05000c;
         public static final int posterr_text=0x7f05000b;

@@ -40,4 +40,5 @@
     	<item>American Express</item>
     	<item>Discover</item>
     </string-array>
+    <string name="ordercomplete_title">Ordine Completo</string>
 </resources>

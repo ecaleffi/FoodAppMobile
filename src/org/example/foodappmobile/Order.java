@@ -3,7 +3,6 @@ package org.example.foodappmobile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -286,68 +285,84 @@ public class Order extends Activity implements OnClickListener{
 			localContext = new BasicHttpContext();
 			// Lego il cookie store al context locale
 			localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+			
+			/* Controllo che la quantità inserita sia in un formato accettabile*/
+			int q = Integer.parseInt(qty[id].getText().toString());
+			if (! (( q > 0) && (q < 1000)) ) {
+				AlertDialog.Builder quant = new AlertDialog.Builder(this);
+        		quant.setMessage("La quantità deve essere un numero intero maggiore di 0 e minore di 1000")
+        			.setCancelable(false)
+        			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+        				public void onClick(DialogInterface dialog, int id) {
+        					dialog.cancel();
+        				}
+        			});
+        		quant.show();	
+			}
+			else {
     	
-			/* Istanzio il prodotto selezionato per inserirlo nella lista*/
-			tmpProd = new Product();
-			tmpProd.setName(name[id]);
-			tmpProd.setDescription(desc[id]);
-			tmpProd.setPrice(price[id]);
-			tmpProd.setQuantity(qty[id].getText().toString());
-			/* Inserisco il prodotto nella lista*/
-			ordered.add(tmpProd);
+				/* Istanzio il prodotto selezionato per inserirlo nella lista*/
+				tmpProd = new Product();
+				tmpProd.setName(name[id]);
+				tmpProd.setDescription(desc[id]);
+				tmpProd.setPrice(price[id]);
+				tmpProd.setQuantity(qty[id].getText().toString());
+				/* Inserisco il prodotto nella lista*/
+				ordered.add(tmpProd);
     	
-			try {  
-				// Aggiungo i parametri da passare con la richiesta POST 
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
-				nameValuePairs.add(new BasicNameValuePair("sku", name[id]));  
-				nameValuePairs.add(new BasicNameValuePair("description", desc[id]));
-				nameValuePairs.add(new BasicNameValuePair("price", price[id]));
-				nameValuePairs.add(new BasicNameValuePair("quantity", qty[id].getText().toString()));
-            	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+				try {  
+					// Aggiungo i parametri da passare con la richiesta POST 
+					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
+					nameValuePairs.add(new BasicNameValuePair("sku", name[id]));  
+					nameValuePairs.add(new BasicNameValuePair("description", desc[id]));
+					nameValuePairs.add(new BasicNameValuePair("price", price[id]));
+					nameValuePairs.add(new BasicNameValuePair("quantity", qty[id].getText().toString()));
+					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
-            	// Execute HTTP Post Request
-            	if (localContext != null) {
-            		HttpResponse response = httpclient.execute(httppost, localContext);
-            		resp = response;
-            	}
-            	else {
-            		HttpResponse response = httpclient.execute(httppost);
-            		resp = response;
-            	}
+					// Execute HTTP Post Request
+					if (localContext != null) {
+						HttpResponse response = httpclient.execute(httppost, localContext);
+						resp = response;
+					}
+					else {
+						HttpResponse response = httpclient.execute(httppost);
+						resp = response;
+					}
             
-            	List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-            	if (cookies.isEmpty()) {
-            		System.out.println("Nessun Cookie");
-            	} else {
-            		for (int i = 0; i < cookies.size(); i++) {
-            			System.out.println("- " + cookies.get(i).toString());
-            		}
-            	}
+					List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+					if (cookies.isEmpty()) {
+						System.out.println("Nessun Cookie");
+					} else {
+						for (int i = 0; i < cookies.size(); i++) {
+							System.out.println("- " + cookies.get(i).toString());
+						}
+					}
             
-            	/* Setto un AlertDialog per visualizzare un messaggio di corretto
-            	 * inserimento del prodotto nel carrello*/
-            	if (resp != null) {
-            		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            		builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
-            			.setCancelable(false)
-            			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-            				public void onClick(DialogInterface dialog, int id) {
-            					dialog.cancel();
-            				}
-            			});
-            		builder.show();
-            	}
+					/* Setto un AlertDialog per visualizzare un messaggio di corretto
+					 * inserimento del prodotto nel carrello*/
+					if (resp != null) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(this);
+						builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
+            				.setCancelable(false)
+            				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            					public void onClick(DialogInterface dialog, int id) {
+            						dialog.cancel();
+            					}
+            				});
+						builder.show();
+					}
             
-            	/*Stampa di prova dei prodotti ordinati*/
-            	if (ordered != null) {
-            		for (int x=0; x < ordered.size(); x++) {
-            			System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
-            					+ " - " + ordered.get(x).getPrice() + " - " + ordered.get(x).getQuantity());
-            		}
-            	}
+					/*Stampa di prova dei prodotti ordinati*/
+					if (ordered != null) {
+						for (int x=0; x < ordered.size(); x++) {
+							System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
+									+ " - " + ordered.get(x).getPrice() + " - " + ordered.get(x).getQuantity());
+						}
+					}
               
-			} catch (ClientProtocolException e) {            
-			} catch (IOException e) {  }
+				} catch (ClientProtocolException e) {            
+				} catch (IOException e) {  }
+			}
 		}
            
 	} // Fine onClick

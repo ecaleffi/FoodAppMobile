@@ -37,6 +37,8 @@
         	android:label="@string/preview_title" />
         <activity android:name=".Payment"
         	android:label="@string/payment_title" />
+        <activity android:name=".OrderComplete"
+        	android:label="@string/ordercomplete_title" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 
