@@ -1,27 +1,13 @@
 package org.example.foodappmobile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
@@ -44,6 +30,8 @@ public class Payment extends Activity {
 	String selectedCard;
 	HttpContext localContext = null;
 	HttpResponse resp;
+	final String urlPost = "http://192.168.2.6:3000/checkout/payment";
+	HttpMethods hm = new HttpMethods();
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -88,29 +76,7 @@ public class Payment extends Activity {
     public void postData() {
     	
     	System.out.println(selectedCard);
-    	//Serve per fare in modo che il metodo POST venga gestito tramite la 
-		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
-		HttpParams params = new BasicHttpParams();
-		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-	
-		//Crea un nuovo HttpClient e POST Header
-		DefaultHttpClient httpclient = new DefaultHttpClient(params);
-		HttpPost httppost = new HttpPost("http://192.168.2.6:3000/checkout/payment");
-		
-		BasicClientCookie ck = new BasicClientCookie(strCookieName, strCookieValue);
-		ck.setPath("/");
-		ck.setDomain("192.168.2.6");
-		ck.setExpiryDate(null);
-		ck.setVersion(0);
-		
-		CookieStore cookieStore = new BasicCookieStore();
-		cookieStore.addCookie(ck);
-
-		// Creo un context HTTP locale
-		localContext = new BasicHttpContext();
-		// Lego il cookie store al context locale
-		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-		
+    			
 		final EditText txtccname = (EditText)findViewById(R.id.ccname);
     	final EditText txtccn = (EditText)findViewById(R.id.ccn);
     	final EditText txtccm = (EditText)findViewById(R.id.ccm);
@@ -212,21 +178,15 @@ public class Payment extends Activity {
     	
     	else { //Se la validazione passa, esegui la richiesta POST
 		
-    		try {  
-    			// Aggiungo i parametri da passare con la richiesta POST 
-    			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
-    			nameValuePairs.add(new BasicNameValuePair("ccname", txtccname.getText().toString()));  
-    			nameValuePairs.add(new BasicNameValuePair("cctype", selectedCard));
-    			nameValuePairs.add(new BasicNameValuePair("ccn", txtccn.getText().toString()));
-    			nameValuePairs.add(new BasicNameValuePair("ccm", txtccm.getText().toString()));
-    			nameValuePairs.add(new BasicNameValuePair("ccy", txtccy.getText().toString()));
-    			nameValuePairs.add(new BasicNameValuePair("ccvn", txtccvn.getText().toString()));
-    			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			
-    			HttpResponse response = httpclient.execute(httppost, localContext);
-    			resp = response;
-    		} catch (ClientProtocolException e) {            
-    		} catch (IOException e) {  }
+    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);
+    		nameValuePairs.add(new BasicNameValuePair("ccname", txtccname.getText().toString()));  
+    		nameValuePairs.add(new BasicNameValuePair("cctype", selectedCard));
+    		nameValuePairs.add(new BasicNameValuePair("ccn", txtccn.getText().toString()));
+    		nameValuePairs.add(new BasicNameValuePair("ccm", txtccm.getText().toString()));
+    		nameValuePairs.add(new BasicNameValuePair("ccy", txtccy.getText().toString()));
+    		nameValuePairs.add(new BasicNameValuePair("ccvn", txtccvn.getText().toString()));
+    		
+			resp = hm.postData(urlPost, nameValuePairs, strCookieName, strCookieValue);
 		
     		if (resp != null) {
     			Intent ordComp = new Intent(this, OrderComplete.class);

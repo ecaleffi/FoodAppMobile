@@ -6,11 +6,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import android.content.Context;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class ProductView extends TextView{
+public class ProductView extends ScrollView{
 	
 	public JSONObject jobj;
 	public ProductView (Context context, String result) {
@@ -46,8 +46,10 @@ public class ProductView extends TextView{
 			e.printStackTrace();
 		}
 		
+		TextView tv = new TextView(context);
+		tv.setText(output);
 		
-		setText(output);
+		this.addView(tv);
 	}
 
 }

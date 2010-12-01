@@ -34,6 +34,10 @@ public class Select extends Activity implements OnClickListener {
         		startActivity(list);
         		break;
         	
+        	case R.id.recipelist_button:
+        		Intent recList = new Intent(this, RecipeList.class);
+        		startActivity(recList);
+        		
         	case R.id.order_button:
         		Intent order = new Intent(this, Order.class);
         		Bundle bundle = new Bundle();
