@@ -23,8 +23,11 @@ public class Select extends Activity implements OnClickListener {
         
         View listButton = findViewById(R.id.prodlist_button);
         listButton.setOnClickListener(this);
+        View recipeButton = findViewById(R.id.recipelist_button);
+        recipeButton.setOnClickListener(this);
         View orderButton = findViewById(R.id.order_button);
         orderButton.setOnClickListener(this);
+        
     }
     
     public void onClick(View v) {
@@ -36,13 +39,17 @@ public class Select extends Activity implements OnClickListener {
         	
         	case R.id.recipelist_button:
         		Intent recList = new Intent(this, RecipeList.class);
+        		Bundle bundle1 = new Bundle();
+				bundle1.putString(strCookieName, strCookieValue);
+				recList.putExtras(bundle1);
         		startActivity(recList);
+        		break;
         		
         	case R.id.order_button:
         		Intent order = new Intent(this, Order.class);
-        		Bundle bundle = new Bundle();
-				bundle.putString(strCookieName, strCookieValue);
-				order.putExtras(bundle);
+        		Bundle bundle2 = new Bundle();
+				bundle2.putString(strCookieName, strCookieValue);
+				order.putExtras(bundle2);
         		startActivity(order);
         		break;
         }
