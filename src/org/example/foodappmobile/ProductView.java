@@ -13,6 +13,8 @@ import android.widget.TextView;
 public class ProductView extends ScrollView{
 	
 	public JSONObject jobj;
+	public ProductList pList;
+	
 	public ProductView (Context context, String result) {
 		super(context);
 		setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
@@ -31,6 +33,7 @@ public class ProductView extends ScrollView{
 			j = new JSONObject(jsonData);
 			System.out.println(j.toString());
 			ProductList temp = gson.fromJson(j.toString(), ProductList.class);
+			pList = temp;
 			String res = "";
 			for (Product prod : temp.getProds()) {
 				System.out.println(prod.getName() + " - " + prod.getDescription()
@@ -50,6 +53,11 @@ public class ProductView extends ScrollView{
 		tv.setText(output);
 		
 		this.addView(tv);
+		
+	}
+	
+	public ProductList getProdList() {
+		return pList;
 	}
 
 }

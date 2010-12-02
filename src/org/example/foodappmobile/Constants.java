@@ -20,5 +20,7 @@ public interface Constants extends BaseColumns{
 	/* Colonne della tabella uses */
 	public static final String PRODUCT_ID = "product_id";
 	public static final String RECIPE_ID = "recipe_id";
+	
+	public static final String DB_PATH = "/data/data/org.example.foodappmobile/databases/";
 
 }

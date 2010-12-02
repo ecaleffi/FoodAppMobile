@@ -1,6 +1,7 @@
 package org.example.foodappmobile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -13,8 +14,11 @@ import com.google.gson.GsonBuilder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -25,12 +29,15 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import static org.example.foodappmobile.Constants.*;
 
 public class Order extends Activity implements OnClickListener{
 	
 	final String url = "http://192.168.2.6:3000/rest/product";
+	final String recUrl = "http://192.168.2.6:3000/rest/recipe";
 	final String postUrl = "http://192.168.2.6:3000/cart/add";
 	String result = "";
+	String resRec = "";
 	/* Array di stringhe per i nomi dei prodotti*/
 	String[] name;
 	/* Array di stringhe per le descrizioni dei prodotti*/
@@ -48,7 +55,19 @@ public class Order extends Activity implements OnClickListener{
 	String strCookieName = "foodapp_session";
 	String strCookieValue;
 	HttpResponse resp;
+	/* Istanza della classe per chiamare dei metodi Http */
 	HttpMethods hm = new HttpMethods();
+	/* Variabile per accedere al database*/
+	private FoodAppData fad;
+	//private FoodAppData products;
+	//private FoodAppData recipes;
+	//private FoodAppData uses;
+	ProductList pl;
+	RecList rl;
+	Product tprod;
+	Recipe trec;
+	ArrayList<String> recProducts;
+	HashMap<String, List<String>> hmap;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -59,7 +78,9 @@ public class Order extends Activity implements OnClickListener{
         strCookieValue = b.getString(strCookieName);
         
         result = hm.callWebService(url);
+        resRec = hm.callWebService(recUrl);
         System.out.println(result);
+        System.out.println(resRec);
         
         /* Definisco un LinearLayout per visualizzare gli elementi nella pagina*/
         LinearLayout ll = new LinearLayout(this);
@@ -80,23 +101,99 @@ public class Order extends Activity implements OnClickListener{
 		int numProd = 0;	//Variabile per contare il numero di prodotti
 		
 		String jsonData = result;
+		String jsonRec = resRec;
 		GsonBuilder gsonb = new GsonBuilder();
 		Gson gson = gsonb.create();
 		JSONObject j;
+		JSONObject j2;
 		
 		try {
 			j = new JSONObject(jsonData);
+			j2 = new JSONObject(jsonRec);
 			ProductList temp = gson.fromJson(j.toString(), ProductList.class);
+			RecList tempRec = gson.fromJson(j2.toString(), RecList.class);
 			prodList = temp;
+			pl = temp;
+			rl = tempRec;
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 		
-		if (prodList == null) {
+		if (pl == null || rl == null) {
 			System.out.println("Errore nella deserializzazione JSON");
 		}
+		
+		/* Inserisco i prodotti nel database */
+		//products = new FoodAppData(this);
+		fad = new FoodAppData(this);
+		/* Controllo che il database non esista già */
+		if (!fad.isDatabaseExist()) {
+			for (Product p : pl.getProds()) {
+				addProduct(p);			
+			}
+			
+			for (Recipe r : rl.getRecipes()) {
+				addRecipe(r);
+			}
+			
+			/* Salvo i prodotti associati alle ricette in un HashMap */
+			hmap = new HashMap<String, List<String>>();
+			
+			for (Recipe r : rl.getRecipes()) {
+				recProducts = new ArrayList<String>();
+				for (String t : r.getProducts()) {
+					recProducts.add(t);
+				}
+				hmap.put(r.getDescription(), recProducts);
+			}
+			
+			addUses(rl, hmap);
+			
+		}
+		else {
+			/* Inserisco nel database solo i prodotti che non sono già presenti */
+			SQLiteDatabase db1 = fad.getReadableDatabase();
+			String[] COL = {NAME};
+			Cursor cursor = db1.query(TABLE_PRODUCTS, COL, null, null, null, null, null);
+			startManagingCursor(cursor);
+			List<String> dbProd = new ArrayList<String>();
+			
+			while (cursor.moveToNext()) {
+				String pname = cursor.getString(0);
+				dbProd.add(pname);
+				System.out.println(pname);
+			}
+			
+			for (Product pr : pl.getProds()) {
+				if (! dbProd.contains(pr.getName())) {
+					addProduct(pr);
+				}
+			}
+			
+			/* Inserisco nel database solo le ricette che non sono già presenti */
+			SQLiteDatabase db2 = fad.getReadableDatabase();
+			String[] COL2 = {DESCRIPTION};
+			Cursor cursor2 = db2.query(TABLE_RECIPES, COL2, null, null, null, null, null);
+			startManagingCursor(cursor2);
+			List<String> dbRec = new ArrayList<String>();
+			
+			while (cursor.moveToNext()) {
+				String rdesc = cursor2.getString(0);
+				dbRec.add(rdesc);
+				//System.out.println(rdesc);
+			}
+			
+			for (Recipe r : rl.getRecipes()) {
+				if (! dbRec.contains(r.getDescription())) {
+					addRecipe(r);
+				}
+			}
+			
+			/* TODO Inserisco nel database solo le relazioni uses che non sono già presenti */
+		}
+		fad.close();
 		
 		/* Numero di prodotti presenti nella lista*/
 		numProd = prodList.getProds().size();
@@ -290,5 +387,55 @@ public class Order extends Activity implements OnClickListener{
 		}
            
 	} // Fine onClick
+    
+    public void addProduct(Product p) {
+    	SQLiteDatabase db = fad.getWritableDatabase();
+    	ContentValues values = new ContentValues();
+    	values.put(NAME, p.getName());
+    	values.put(DESCRIPTION, p.getDescription());
+    	values.put(PRICE, p.getPrice());
+    	values.put(DURATION, "2012-01-01");
+    	db.insertOrThrow(TABLE_PRODUCTS, null, values);
+    }
+    
+    public void addRecipe(Recipe r) {
+    	SQLiteDatabase db = fad.getWritableDatabase();
+    	ContentValues values = new ContentValues();
+    	values.put(DESCRIPTION, r.getDescription());
+    	db.insertOrThrow(TABLE_RECIPES, null, values);
+    }
+    
+    public void addUses(RecList rl, HashMap<String, List<String>> hmap ) {
+    	for (Recipe rec : rl.getRecipes()) {
+			/* Ricavo dall'HashMap la lista dei prodotti associata alla ricetta */
+			List<String> lsprod = new ArrayList<String>();
+			lsprod = hmap.get(rec.getDescription());
+			
+			/* Definisco una query per ricavare l'id delle ricette data la descrizione */
+			SQLiteDatabase db3 = fad.getWritableDatabase();
+			String[] COL = {_ID};
+			String where = "description = " + "\"" + rec.getDescription() + "\"";
+			Cursor cursor = db3.query(TABLE_RECIPES, COL, where, null, null, null, null);
+			startManagingCursor(cursor);
+			while(cursor.moveToNext()) {
+				int id = cursor.getInt(0);
+				for (int i=0; i<lsprod.size(); i++) {
+					/* Definisco una query per ricavare l'id dei prodotti dato il nome */
+					String where2 = "name = " + "\"" + lsprod.get(i) + "\"";
+					Cursor c2 = db3.query(TABLE_PRODUCTS, COL, where2, null, null, null, null);
+					startManagingCursor(c2);
+					while (c2.moveToNext()) {
+						/* Inserisco i valori trovati nella tabella uses */
+						int prod_id = c2.getInt(0);
+						ContentValues values = new ContentValues();
+						values.put(RECIPE_ID, id);
+						values.put(PRODUCT_ID, prod_id);
+						db3.insertOrThrow(TABLE_USES, null, values);
+					}
+				}
+			}
+		}
+    }
+    
     
 }

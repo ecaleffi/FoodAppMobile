@@ -1,5 +1,7 @@
 package org.example.foodappmobile;
 
+import java.io.File;
+
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,12 +25,12 @@ public class FoodAppData extends SQLiteOpenHelper {
 		try {
 			db.execSQL("CREATE TABLE " + TABLE_PRODUCTS + " (" + _ID +
 				" INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME + " CHAR(64)," +
-				DESCRIPTION + " TEXT," + PRICE + " MONEY," + DURATION + " DATE" + ");" +
-				" CREATE TABLE " + TABLE_RECIPES + " (" + _ID + 
-				" INTEGER PRIMARY KEY AUTOINCREMENT, " + DESCRIPTION + " TEXT" + ");" + 
-				" CREATE TABLE " + TABLE_USES + " (" + PRODUCT_ID + " INTEGER REFERENCES PRODUCT(_ID), " +
+				DESCRIPTION + " TEXT," + PRICE + " MONEY," + DURATION + " DATE" + ");");
+			db.execSQL("CREATE TABLE " + TABLE_RECIPES + " (" + _ID + 
+				" INTEGER PRIMARY KEY AUTOINCREMENT, " + DESCRIPTION + " TEXT" + ");");
+			db.execSQL("CREATE TABLE " + TABLE_USES + " (" + PRODUCT_ID + " INTEGER REFERENCES PRODUCT(_ID), " +
 				RECIPE_ID + " INTEGER REFERENCES RECIPE(_ID), " + 
-				"PRIMARY KEY (RECIPE_ID, PRODUCT_ID)" + ");");
+				"PRIMARY KEY (RECIPE_ID, PRODUCT_ID) " + ");");
 			db.setTransactionSuccessful();
 		} catch (SQLException e) {
 			Log.e("Errore nella creazione delle tabelle", e.toString());
@@ -53,6 +55,11 @@ public class FoodAppData extends SQLiteOpenHelper {
 		} finally {
 			db.endTransaction();
 		}
+	}
+	
+	public boolean isDatabaseExist() {
+		File dbFile = new File(DB_PATH+DATABASE_NAME);
+		return dbFile.exists();
 	}
 
 }
