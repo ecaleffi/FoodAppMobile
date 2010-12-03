@@ -163,7 +163,7 @@ public class Order extends Activity implements OnClickListener{
 			while (cursor.moveToNext()) {
 				String pname = cursor.getString(0);
 				dbProd.add(pname);
-				System.out.println(pname);
+				//System.out.println(pname);
 			}
 			
 			for (Product pr : pl.getProds()) {
@@ -173,25 +173,30 @@ public class Order extends Activity implements OnClickListener{
 			}
 			
 			/* Inserisco nel database solo le ricette che non sono già presenti */
+			/* TODO ERRORE NELL'INSERIMENTO RICETTA*/
 			SQLiteDatabase db2 = fad.getReadableDatabase();
 			String[] COL2 = {DESCRIPTION};
 			Cursor cursor2 = db2.query(TABLE_RECIPES, COL2, null, null, null, null, null);
 			startManagingCursor(cursor2);
 			List<String> dbRec = new ArrayList<String>();
 			
-			while (cursor.moveToNext()) {
+			while (cursor2.moveToNext()) {
 				String rdesc = cursor2.getString(0);
 				dbRec.add(rdesc);
-				//System.out.println(rdesc);
+				System.out.println("db" + rdesc);
 			}
 			
 			for (Recipe r : rl.getRecipes()) {
+				System.out.println(r.getDescription());
 				if (! dbRec.contains(r.getDescription())) {
+					System.out.println(r.getDescription());
 					addRecipe(r);
+					
+					/* Se c'è una nuova ricetta, inserisco nella relazione uses tale ricetta con i prodotti
+					 * che contiene */
+					addUsesSingleRecipe(r);
 				}
 			}
-			
-			/* TODO Inserisco nel database solo le relazioni uses che non sono già presenti */
 		}
 		fad.close();
 		
@@ -435,6 +440,39 @@ public class Order extends Activity implements OnClickListener{
 				}
 			}
 		}
+    }
+    
+    public void addUsesSingleRecipe(Recipe r) {
+    	
+    	recProducts = new ArrayList<String>();
+		for (String t : r.getProducts()) {
+			recProducts.add(t);
+		}
+		
+		/* Definisco una query per ricavare l'id della ricetta data la descrizione */
+		SQLiteDatabase db3 = fad.getWritableDatabase();
+		String[] COL = {_ID};
+		String where = "description = " + "\"" + r.getDescription() + "\"";
+		Cursor cursor = db3.query(TABLE_RECIPES, COL, where, null, null, null, null);
+		startManagingCursor(cursor);
+		while(cursor.moveToNext()) {
+			int id = cursor.getInt(0);
+			for (int i=0; i<recProducts.size(); i++) {
+				/* Definisco una query per ricavare l'id dei prodotti dato il nome */
+				String where2 = "name = " + "\"" + recProducts.get(i) + "\"";
+				Cursor c2 = db3.query(TABLE_PRODUCTS, COL, where2, null, null, null, null);
+				startManagingCursor(c2);
+				while (c2.moveToNext()) {
+					/* Inserisco i valori trovati nella tabella uses */
+					int prod_id = c2.getInt(0);
+					ContentValues values = new ContentValues();
+					values.put(RECIPE_ID, id);
+					values.put(PRODUCT_ID, prod_id);
+					db3.insertOrThrow(TABLE_USES, null, values);
+				}
+			}
+		}
+		
     }
     
     
