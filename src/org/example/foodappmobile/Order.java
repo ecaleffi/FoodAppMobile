@@ -165,6 +165,7 @@ public class Order extends Activity implements OnClickListener{
 				dbProd.add(pname);
 				//System.out.println(pname);
 			}
+			cursor.close();
 			
 			for (Product pr : pl.getProds()) {
 				if (! dbProd.contains(pr.getName())) {
@@ -173,7 +174,6 @@ public class Order extends Activity implements OnClickListener{
 			}
 			
 			/* Inserisco nel database solo le ricette che non sono già presenti */
-			/* TODO ERRORE NELL'INSERIMENTO RICETTA*/
 			SQLiteDatabase db2 = fad.getReadableDatabase();
 			String[] COL2 = {DESCRIPTION};
 			Cursor cursor2 = db2.query(TABLE_RECIPES, COL2, null, null, null, null, null);
@@ -183,13 +183,11 @@ public class Order extends Activity implements OnClickListener{
 			while (cursor2.moveToNext()) {
 				String rdesc = cursor2.getString(0);
 				dbRec.add(rdesc);
-				System.out.println("db" + rdesc);
 			}
+			cursor2.close();
 			
 			for (Recipe r : rl.getRecipes()) {
-				System.out.println(r.getDescription());
 				if (! dbRec.contains(r.getDescription())) {
-					System.out.println(r.getDescription());
 					addRecipe(r);
 					
 					/* Se c'è una nuova ricetta, inserisco nella relazione uses tale ricetta con i prodotti
@@ -437,8 +435,10 @@ public class Order extends Activity implements OnClickListener{
 						values.put(PRODUCT_ID, prod_id);
 						db3.insertOrThrow(TABLE_USES, null, values);
 					}
+					c2.close();
 				}
 			}
+			cursor.close();
 		}
     }
     
@@ -470,8 +470,10 @@ public class Order extends Activity implements OnClickListener{
 					values.put(PRODUCT_ID, prod_id);
 					db3.insertOrThrow(TABLE_USES, null, values);
 				}
+				c2.close();
 			}
 		}
+		cursor.close();
 		
     }
     
