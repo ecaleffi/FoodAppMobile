@@ -21,7 +21,7 @@ public class Checkout extends Activity{
 	
 	String strCookieName = "foodapp_session";
     String strCookieValue;
-    final String postUrl = "http://192.168.2.6:3000/checkout/billing";
+    final String postUrl = "checkout/billing";
     /* Context Http locale per aggiungere i cookie alla richiesta POST*/
 	HttpContext localContext = null;
 	ArrayList<Product> ordered;

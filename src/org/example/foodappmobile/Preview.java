@@ -1,22 +1,9 @@
 package org.example.foodappmobile;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
@@ -36,6 +23,8 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class Preview extends Activity implements OnClickListener{
 
+	final String url = "checkout/payment/";
+	HttpMethods hm = new HttpMethods();
 	/* Parametri della sessione da inserire nel cookie*/
 	String strCookieName = "foodapp_session";
     String strCookieValue;
@@ -362,36 +351,7 @@ public class Preview extends Activity implements OnClickListener{
     
     public void onClick(View v) {
     	
-    	//Serve per fare in modo che il metodo POST venga gestito tramite la 
-		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
-		HttpParams params = new BasicHttpParams();
-		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-	
-		//Crea un nuovo HttpClient e POST Header
-		DefaultHttpClient httpclient = new DefaultHttpClient(params);
-		HttpGet httpget = new HttpGet("http://192.168.2.6:3000/checkout/payment");
-		
-		BasicClientCookie ck = new BasicClientCookie(strCookieName, strCookieValue);
-		ck.setPath("/");
-		ck.setDomain("192.168.2.6");
-		ck.setExpiryDate(null);
-		ck.setVersion(0);
-		
-		CookieStore cookieStore = new BasicCookieStore();
-		cookieStore.addCookie(ck);
-
-		// Creo un context HTTP locale
-		localContext = new BasicHttpContext();
-		// Lego il cookie store al context locale
-		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-		
-		try {
-			HttpResponse response = httpclient.execute(httpget, localContext);
-			resp = response;
-		}
-		  catch (ClientProtocolException e) {            
-		} catch (IOException e) {  }
-		httpclient.getConnectionManager().shutdown();
+    	resp = hm.postDataNoPairs(url, strCookieName, strCookieValue);
     	
 		if (resp != null) {
 			Intent pay = new Intent(this, Payment.class);

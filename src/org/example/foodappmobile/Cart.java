@@ -17,9 +17,12 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 import static org.example.foodappmobile.Constants.*;
@@ -32,7 +35,8 @@ public class Cart extends Activity implements OnClickListener{
     String strCookieValue;
     HttpResponse resp;
     ArrayList<Product> ordered;
-    final String url = "http://192.168.2.6:3000/checkout/";
+    List<String> orderedString;
+    final String url = "checkout/";
     FoodAppData fad;
     HashMap<Integer, List<Integer>> map;
     HashMap<Integer, Integer> count;
@@ -40,6 +44,8 @@ public class Cart extends Activity implements OnClickListener{
     List<Integer> commonRecipe;
     HashMap<String, List<String>> recProd;
     List<String> prods;
+    List<String> allProds;
+    int index;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -50,6 +56,12 @@ public class Cart extends Activity implements OnClickListener{
         strCookieValue = b.getString(strCookieName);
         
         System.out.println(strCookieName + "=" + strCookieValue);
+        
+        /* Aggiungo alla lista orderedString tutti i nomi dei prodotti ordinati */
+        orderedString = new ArrayList<String>();
+        for (int c=0; c<ordered.size(); c++) {
+        	orderedString.add(ordered.get(c).getName());
+        }
         
         /*for (int x=0; x < ordered.size(); x++) {
 			System.out.println(ordered.get(x).getName() + " - " + ordered.get(x).getDescription() 
@@ -237,17 +249,127 @@ public class Cart extends Activity implements OnClickListener{
         }
         fad.close();
         
-        /* Definisco un Iteratore per scorrere i valori dell'HashMap costruito prima */
-        Iterator<String> iter = recProd.keySet().iterator();
-        while (iter.hasNext()) {
-        	String rDesc = iter.next();
-        	prods = new ArrayList<String>();
-        	prods = recProd.get(rDesc);
-        	/*for (int i=0; i < prods.size(); i++ ) {
-        		System.out.println(rDesc + " -> " + prods.get(i));
-        	} 	OK */
-        }
+        if ( ! recProd.isEmpty()) {
+        	/* Visualizzo nel Layout le ricette consigliate */
+        	TextView rec = new TextView(this);
+        	rec.setText("\nRicette consigliate\n");
+        	rec.setGravity(Gravity.CENTER);
+        	rec.setTextSize(18);
+        	ll.addView(rec);
         
+        	/* Definisco un TableLayout per visualizzare su una colonna le ricette consigliate
+        	 * e nell'altra i prodotti che sono associati alle ricette */
+        	TableLayout tl = new TableLayout(this);
+        	/* Setto le colonne Shrinkable in modo che se il testo è troppo lungo
+        	 * non vada ad occupare troppo spazio dell'altra colonna ma venga
+        	 * scritto a capo*/
+        	tl.setColumnShrinkable(0, true);
+        	//tl.setColumnShrinkable(1, true);
+        	tl.setColumnStretchable(1, true);
+        
+        	/* La prima riga conterrà i titoli per ricette e prodotti */
+        	TableRow titleRow = new TableRow(this);
+        	TextView titleRecipe = new TextView(this);
+        	titleRecipe.setText("Ricette");
+        	titleRecipe.setTextSize((float) 16.5);
+        	titleRow.addView(titleRecipe);
+        	TextView titleProd = new TextView(this);
+        	titleProd.setText("Prodotti");
+        	titleProd.setTextSize((float) 16.5);
+        	titleProd.setGravity(Gravity.CENTER);
+        	titleRow.addView(titleProd);
+        	tl.addView(titleRow);
+        
+        	/* Setto i parametri per avere un marginBottom*/
+        	MarginLayoutParams mlp = new MarginLayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+        			LinearLayout.LayoutParams.WRAP_CONTENT );
+        	mlp.setMargins(0,0,0,150);
+        
+        	/* Vista di separazione*/
+        	View sep1 = new View(this);
+        	sep1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
+        			LayoutParams.FILL_PARENT));
+        	sep1.setBackgroundResource(R.color.separator);
+        	sep1.setMinimumHeight(3);
+        	sep1.setLayoutParams(mlp);
+        	tl.addView(sep1);
+        
+        	/* Definisco un Iteratore per scorrere i valori dell'HashMap costruito prima */
+        	Iterator<String> iter = recProd.keySet().iterator();
+        	/* Preparo una lista per salvare tutti i prodotti che si possono ordinare */
+        	allProds = new ArrayList<String>();
+        	while (iter.hasNext()) {
+        		String rDesc = iter.next();
+        		prods = new ArrayList<String>();
+        		prods = recProd.get(rDesc);
+        		/*for (int i=0; i < prods.size(); i++ ) {
+        			System.out.println(rDesc + " -> " + prods.get(i));
+        		} 	OK */
+        		TableRow tr = new TableRow(this);
+        		TextView recipe = new TextView(this);
+        		recipe.setText(rDesc);
+        		tr.addView(recipe);
+        		for (int i=0; i < prods.size(); i++ ) {
+        			TextView prodName = new TextView(this);
+        			allProds.add(prods.get(i));
+        			prodName.setText(prods.get(i));
+        			prodName.setGravity(Gravity.CENTER);
+        			if (i == 0) {
+        				tr.addView(prodName);
+        				/*if (! orderedString.contains(prodName)) {
+        					TextView add = new TextView(this);
+        					add.setText("Aggiungi al carrello");
+        					tr.addView(add);
+        				} */
+        				tl.addView(tr);
+        			}
+        			else {
+        				TableRow tr2 = new TableRow(this);
+        				TextView empty = new TextView(this);
+        				tr2.addView(empty);
+        				tr2.addView(prodName);
+        				/*if (! orderedString.contains(prodName)) {
+        					TextView add = new TextView(this);
+        					add.setText("Aggiungi al carrello");
+        					tr.addView(add);
+        				} */
+        				tl.addView(tr2);
+        			}
+        		}
+        	
+        	}
+        
+        	TextView tAdd = new TextView(this);
+        	tAdd.setText("\nVuoi inserire uno di questi prodotti nel carrello?\n");
+        	tl.addView(tAdd);
+        
+        	for (int index=0; index < allProds.size(); index++) {
+        		if (! orderedString.contains(allProds.get(index))) {
+        			TableRow tx = new TableRow(this);
+        			TextView tvProd = new TextView(this);
+        			tvProd.setText(allProds.get(index));
+        			tx.addView(tvProd);
+        			Button addCart = new Button(this);
+        			addCart.setText("Aggiungi");
+        			tx.addView(addCart);
+        			tl.addView(tx);
+        		}
+        	}
+        
+        	ll.addView(tl);
+        
+        	/* Inserisco un TextView vuoto per separare il bottone dalla tabella */
+        	TextView space = new TextView(this);
+        	space.setHeight(40);
+        	ll.addView(space);
+        }
+        else {
+        	TextView noRec = new TextView(this);
+        	noRec.setText("\nNon vi è alcuna ricetta consigliata per i prodotti presenti" +
+        			" nel carrello.\n");
+        	ll.addView(noRec);
+        }
+         
         /* Aggiungo il bottone per fare il checkout */
         LinearLayout bt = new LinearLayout(this);
         bt.setOrientation(LinearLayout.HORIZONTAL);

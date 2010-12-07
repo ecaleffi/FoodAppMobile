@@ -18,7 +18,7 @@ public class Login extends Activity{
 	Cookie mycookie;
 	HttpMethods hm;
 	StructResp sr;
-	final String url = "http://192.168.2.6:3000/people/login";
+	final String url = "people/login";
 	int respCode = 0;
 	
 	/** Called when the activity is first created. */  

@@ -33,9 +33,9 @@ import static org.example.foodappmobile.Constants.*;
 
 public class Order extends Activity implements OnClickListener{
 	
-	final String url = "http://192.168.2.6:3000/rest/product";
-	final String recUrl = "http://192.168.2.6:3000/rest/recipe";
-	final String postUrl = "http://192.168.2.6:3000/cart/add";
+	final String url = "rest/product";
+	final String recUrl = "rest/recipe";
+	final String postUrl = "cart/add";
 	String result = "";
 	String resRec = "";
 	/* Array di stringhe per i nomi dei prodotti*/

@@ -30,7 +30,7 @@ public class Payment extends Activity {
 	String selectedCard;
 	HttpContext localContext = null;
 	HttpResponse resp;
-	final String urlPost = "http://192.168.2.6:3000/checkout/payment";
+	final String urlPost = "checkout/payment";
 	HttpMethods hm = new HttpMethods();
 	
 	/** Called when the activity is first created. */  

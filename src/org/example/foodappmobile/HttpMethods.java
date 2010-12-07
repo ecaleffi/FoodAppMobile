@@ -35,6 +35,7 @@ public class HttpMethods {
 	
 	public String callWebService(String url) {
 		
+		url = "http://192.168.2.6:3000/" + url;
     	HttpClient httpclient = new DefaultHttpClient();  
 		HttpGet request = new HttpGet(url);  
 		BasicResponseHandler handler = new BasicResponseHandler(); 
@@ -50,6 +51,7 @@ public class HttpMethods {
 	
 	public HttpResponse postData(String url, List<NameValuePair> nvp, String cookieName, String cookieValue) {
 		
+		url = "http://192.168.2.6:3000/" + url;
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
 		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
 		HttpParams params = new BasicHttpParams();
@@ -92,6 +94,8 @@ public class HttpMethods {
 	}
 	
 	public StructResp postDataLogin (String url, List<NameValuePair> nvp) {
+		
+		url = "http://192.168.2.6:3000/" + url;
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
 		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
 		HttpParams params = new BasicHttpParams();
@@ -124,6 +128,8 @@ public class HttpMethods {
 	}
 	
 	public HttpResponse postDataNoPairs(String url, String cookieName, String cookieValue) {
+		
+		url = "http://192.168.2.6:3000/" + url;
 		
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
 		// versione di HTTP 1.1; in questo modo la risposta è molto più performante

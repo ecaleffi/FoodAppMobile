@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 public class RecipeList extends Activity {
 	
-	final String url = "http://192.168.2.6:3000/rest/recipe";
+	final String url = "rest/recipe";
 	String result = "";
 	HttpMethods hm;
 	RecipeView rv;

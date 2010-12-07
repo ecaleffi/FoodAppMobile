@@ -5,7 +5,7 @@ import android.app.Activity;
 
 public class ProdList extends Activity {
 	
-	final String url = "http://192.168.2.6:3000/rest/product";
+	final String url = "rest/product";
 	String result = "";
 	ProductView pview;
 	HttpMethods hm;
