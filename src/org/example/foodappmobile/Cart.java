@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
@@ -46,6 +48,12 @@ public class Cart extends Activity implements OnClickListener{
     List<String> prods;
     List<String> allProds;
     int index;
+    
+    /* Prodotto che può essere aggiunto scegliendolo fra gli ingredienti delle ricette
+     * consigliate */
+    Product newProd;
+    final String postUrl = "cart/add";
+    HttpMethods hm;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -57,7 +65,23 @@ public class Cart extends Activity implements OnClickListener{
         
         System.out.println(strCookieName + "=" + strCookieValue);
         
-        /* Aggiungo alla lista orderedString tutti i nomi dei prodotti ordinati */
+        /* Chiamo il metodo per visualizzare la pagina */
+        displayPage();
+        
+    } //fine onCreate
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	
+    	/* Chiamo il metodo per visualizzare la pagina */
+    	displayPage();
+    	
+    }
+    
+    public void displayPage() {
+    	
+    	/* Aggiungo alla lista orderedString tutti i nomi dei prodotti ordinati */
         orderedString = new ArrayList<String>();
         for (int c=0; c<ordered.size(); c++) {
         	orderedString.add(ordered.get(c).getName());
@@ -339,18 +363,27 @@ public class Cart extends Activity implements OnClickListener{
         	
         	}
         
-        	TextView tAdd = new TextView(this);
-        	tAdd.setText("\nVuoi inserire uno di questi prodotti nel carrello?\n");
-        	tl.addView(tAdd);
+        	boolean write = false;
         
         	for (int index=0; index < allProds.size(); index++) {
         		if (! orderedString.contains(allProds.get(index))) {
+        			/* Se sono presenti prodotti da aggiungere visualizzo la scritta
+        			 * ma soltanto una volta */
+        			if ( ! write) {
+        				TextView tAdd = new TextView(this);
+        	        	tAdd.setText("\nVuoi inserire uno di questi prodotti nel carrello?\n");
+        	        	tl.addView(tAdd);
+        	        	write = true;
+        			}
+        			
         			TableRow tx = new TableRow(this);
         			TextView tvProd = new TextView(this);
         			tvProd.setText(allProds.get(index));
         			tx.addView(tvProd);
         			Button addCart = new Button(this);
         			addCart.setText("Aggiungi");
+        			addCart.setId(index);
+        			addCart.setOnClickListener(this);
         			tx.addView(addCart);
         			tl.addView(tx);
         		}
@@ -378,6 +411,7 @@ public class Cart extends Activity implements OnClickListener{
         chk.setText("Checkout");
         chk.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
+        chk.setId(999);
         chk.setOnClickListener(this);
         bt.addView(chk);
         ll.addView(bt);
@@ -385,24 +419,71 @@ public class Cart extends Activity implements OnClickListener{
         /* Aggiungo il LinearLayout principale allo ScrollView e setto il contenuto della pagina */
         sv.addView(ll);
         setContentView(sv);
-    } //fine onCreate
+    	
+    }
+    
     
     public void onClick (View v) {
     	
-    	HttpMethods hm = new HttpMethods();
-    	resp = hm.postDataNoPairs(url, strCookieName, strCookieValue);
+    	int id = v.getId();
+    	
+    	if ( id == 999 ) {
+    		HttpMethods hm = new HttpMethods();
+    		resp = hm.postDataNoPairs(url, strCookieName, strCookieValue);
 		
-		if (resp != null)  {
-			/* Creo l'intent e preparo i parametri da passare */
-			Intent check = new Intent(this, Checkout.class);
-			Bundle b = new Bundle();
-			b.putParcelableArrayList("orderedProducts", ordered);
-			b.putString(strCookieName, strCookieValue);
-			check.putExtras(b);
+    		if (resp != null)  {
+    			/* Creo l'intent e preparo i parametri da passare */
+    			Intent check = new Intent(this, Checkout.class);
+    			Bundle b = new Bundle();
+    			b.putParcelableArrayList("orderedProducts", ordered);
+    			b.putString(strCookieName, strCookieValue);
+    			check.putExtras(b);
 		
-			/* Avvio l'Activity*/				
-			startActivity(check);
-		}
+    			/* Avvio l'Activity*/				
+    			startActivity(check);
+    		}
+    	}
+    	else {
+    		//System.out.println("Premuto il pulsante con id = "+id);
+    		//System.out.println("Corrisponde al prodotto -> " + allProds.get(id));
+    		fad = new FoodAppData(this);
+    		SQLiteDatabase db = fad.getReadableDatabase();
+    		String[] COL = {DESCRIPTION, PRICE};
+    		String where = NAME + " = " + "\"" + allProds.get(id) + "\"";
+    		Cursor c = db.query(TABLE_PRODUCTS, COL, where, null, null, null, null);
+    		startManagingCursor(c);
+    		while(c.moveToNext()) {
+    			String description = c.getString(0);
+    			String price = c.getString(1);
+    			newProd = new Product();
+    			newProd.setName(allProds.get(id));
+    			newProd.setDescription(description);
+    			newProd.setPrice(price);
+    			newProd.setQuantity("1");
+    			ordered.add(newProd);
+    		}
+    		c.close();
+    		fad.close();
+    		
+    		if (newProd != null) {
+    			
+    			hm = new HttpMethods();
+    			
+    			// Aggiungo i parametri da passare con la richiesta POST 
+    			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);  
+    			nameValuePairs.add(new BasicNameValuePair("sku", newProd.getName()));  
+    			nameValuePairs.add(new BasicNameValuePair("description", newProd.getDescription()));
+    			nameValuePairs.add(new BasicNameValuePair("price", newProd.getPrice()));
+    			nameValuePairs.add(new BasicNameValuePair("quantity", newProd.getQuantity()));
+			
+    			resp = hm.postData(postUrl, nameValuePairs, strCookieName, strCookieValue);
+    		}
+    		
+    		if (resp != null) {
+    			Intent added = new Intent(this, AddProductFromCart.class);
+    			startActivity(added);
+    		}
+    	}
     }
 
 }
