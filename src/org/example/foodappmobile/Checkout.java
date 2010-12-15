@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class Checkout extends Activity{
@@ -41,6 +42,68 @@ public class Checkout extends Activity{
         ordered = b.getParcelableArrayList("orderedProducts");
         strCookieValue = b.getString(strCookieName);
         System.out.println(strCookieName + "=" + strCookieValue);
+        
+        final CheckBox cb = (CheckBox)findViewById(R.id.check);
+        cb.setOnClickListener(new CheckBox.OnClickListener(){
+        	public void onClick(View v) {
+        		
+        		/* Recupero le informazioni di fatturazione */
+    			final EditText txtBillToFirstName = (EditText)findViewById(R.id.billtoname);
+            	final EditText txtBillToLastName = (EditText)findViewById(R.id.billtosurname);
+            	final EditText txtBillToAddress1 = (EditText)findViewById(R.id.billtoaddress);
+            	final EditText txtBillToCity = (EditText)findViewById(R.id.billtocity);
+            	final EditText txtBillToState = (EditText)findViewById(R.id.billtostate);
+            	final EditText txtBillToZip = (EditText)findViewById(R.id.billtozip);
+            	final EditText txtBillToCountry = (EditText)findViewById(R.id.billtocountry);
+            	final EditText txtBillToDayPhone = (EditText)findViewById(R.id.billtoday_phone);
+            	final EditText txtBillToNightPhone = (EditText)findViewById(R.id.billtonight_phone);
+            	final EditText txtBillToFax = (EditText)findViewById(R.id.billtofax);
+            	final EditText txtBillToEmail = (EditText)findViewById(R.id.billtoemail);
+            	
+            	/* Recupero le informazioni di spedizione */
+            	final EditText txtShipToFirstName = (EditText)findViewById(R.id.shiptoname);
+            	final EditText txtShipToLastName = (EditText)findViewById(R.id.shiptosurname);
+            	final EditText txtShipToAddress1 = (EditText)findViewById(R.id.shiptoaddress);
+            	final EditText txtShipToCity = (EditText)findViewById(R.id.shiptocity);
+            	final EditText txtShipToState = (EditText)findViewById(R.id.shiptostate);
+            	final EditText txtShipToZip = (EditText)findViewById(R.id.shiptozip);
+            	final EditText txtShipToCountry = (EditText)findViewById(R.id.shiptocountry);
+            	final EditText txtShipToDayPhone = (EditText)findViewById(R.id.shiptoday_phone);
+            	final EditText txtShipToNightPhone = (EditText)findViewById(R.id.shiptonight_phone);
+            	final EditText txtShipToFax = (EditText)findViewById(R.id.shiptofax);
+            	final EditText txtShipToEmail = (EditText)findViewById(R.id.shiptoemail);
+        		
+            	/* Controllo se il checkbox è selezionato */
+            	if (cb.isChecked()) {
+                	/* Setto le informazioni di spedizione uguali a quelle di fatturazione */
+                	txtShipToFirstName.setText(txtBillToFirstName.getText().toString());
+                	txtShipToLastName.setText(txtBillToLastName.getText().toString());
+                	txtShipToAddress1.setText(txtBillToAddress1.getText().toString());
+                	txtShipToCity.setText(txtBillToCity.getText().toString());
+                	txtShipToState.setText(txtBillToState.getText().toString());
+                	txtShipToZip.setText(txtBillToZip.getText().toString());
+                	txtShipToCountry.setText(txtBillToCountry.getText().toString());
+                	txtShipToDayPhone.setText(txtBillToDayPhone.getText().toString());
+                	txtShipToNightPhone.setText(txtBillToNightPhone.getText().toString());
+                	txtShipToFax.setText(txtBillToFax.getText().toString());
+                	txtShipToEmail.setText(txtBillToEmail.getText().toString());
+        		}
+        		else {
+        			txtShipToFirstName.setText("");
+                	txtShipToLastName.setText("");
+                	txtShipToAddress1.setText("");
+                	txtShipToCity.setText("");
+                	txtShipToState.setText("");
+                	txtShipToZip.setText("");
+                	txtShipToCountry.setText("");
+                	txtShipToDayPhone.setText("");
+                	txtShipToNightPhone.setText("");
+                	txtShipToFax.setText("");
+                	txtShipToEmail.setText("");
+        		}
+        	}
+        }); 
+        	
         
         final Button btnChkout = (Button)findViewById(R.id.insert);  
         btnChkout.setOnClickListener(new Button.OnClickListener(){  

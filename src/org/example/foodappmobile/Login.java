@@ -31,11 +31,11 @@ public class Login extends Activity{
         btnLogin.setOnClickListener(new Button.OnClickListener(){  
             public void onClick(View v) {
             	
-            	final EditText txtName = (EditText)findViewById(R.id.login_name);
+            	final EditText txtUserName = (EditText)findViewById(R.id.login_name);
             	final EditText txtPw = (EditText)findViewById(R.id.login_pw);
             	
             	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);  
-                nameValuePairs.add(new BasicNameValuePair("name", txtName.getText().toString()));  
+                nameValuePairs.add(new BasicNameValuePair("username", txtUserName.getText().toString()));  
                 nameValuePairs.add(new BasicNameValuePair("password", txtPw.getText().toString()));
             	
             	hm = new HttpMethods();
