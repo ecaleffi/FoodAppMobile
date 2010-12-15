@@ -330,6 +330,17 @@ public class Order extends Activity implements OnClickListener{
 		}
 		
 		else {
+			/* Controllo che la quantità richiesta del prodotto sia disponibile */
+			int qty_available = 0;
+			fad = new FoodAppData(this);
+			SQLiteDatabase db = fad.getReadableDatabase();
+			String[] COL = {STOCK_QTY};
+			String where = "name = " + "\"" + name[id] + "\"";
+			Cursor c = db.query(TABLE_PRODUCTS, COL, where, null, null, null, null);
+			startManagingCursor(c);
+			while (c.moveToNext()) {
+				qty_available = c.getInt(0);
+			}
 			
 			/* Controllo che la quantità inserita sia in un formato accettabile*/
 			int q = Integer.parseInt(qty[id].getText().toString());
@@ -343,6 +354,18 @@ public class Order extends Activity implements OnClickListener{
         				}
         			});
         		quant.show();	
+			}
+			else if (q > qty_available) {
+				AlertDialog.Builder qty_error = new AlertDialog.Builder(this);
+        		qty_error.setMessage("La quantità di prodotto richiesta non è disponibile. La quantità massima" +
+        				" che è possibile ordinare è: " + qty_available)
+        			.setCancelable(false)
+        			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+        				public void onClick(DialogInterface dialog, int id) {
+        					dialog.cancel();
+        				}
+        			});
+        		qty_error.show();
 			}
 			else {
     	
@@ -398,6 +421,8 @@ public class Order extends Activity implements OnClickListener{
     	values.put(DESCRIPTION, p.getDescription());
     	values.put(PRICE, p.getPrice());
     	values.put(DURATION, "2012-01-01");
+    	values.put(STOCK_QTY, Integer.parseInt(p.getStockQty()));
+    	values.put(STOCK_THRESHOLD, Integer.parseInt(p.getStockThreshold()));
     	db.insertOrThrow(TABLE_PRODUCTS, null, values);
     }
     

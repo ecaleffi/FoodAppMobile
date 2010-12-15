@@ -11,6 +11,8 @@ public class Product implements Parcelable{
 	private String description;
 	private String price;
 	private String quantity;
+	private String stock_qty;
+	private String stock_threshold;
 	private String tot;
 	
 	public Product() {}
@@ -31,6 +33,14 @@ public class Product implements Parcelable{
 		this.quantity = quantity;
 	}
 	
+	public void setStockQty (String stock_qty) {
+		this.stock_qty = stock_qty;
+	}
+	
+	public void setStockThreshold (String stock_threshold) {
+		this.stock_threshold = stock_threshold;
+	}
+	
 	public void setTot (String tot) {
 		this.tot = tot;
 	}
@@ -42,6 +52,10 @@ public class Product implements Parcelable{
 	public String getPrice() { return price; }
 	
 	public String getQuantity() { return quantity; }
+	
+	public String getStockQty() { return stock_qty; }
+	
+	public String getStockThreshold() { return stock_threshold; }
 	
 	public String getTot() { 
 		int qty = Integer.parseInt(quantity);
@@ -78,6 +92,8 @@ public class Product implements Parcelable{
 		dest.writeString(description);
 		dest.writeString(price);
 		dest.writeString(quantity);
+		dest.writeString(stock_qty);
+		dest.writeString(stock_threshold);
 	}
 	
 	private void readFromParcel(Parcel in) {
@@ -89,6 +105,8 @@ public class Product implements Parcelable{
 		description = in.readString();
 		price = in.readString();
 		quantity = in.readString();
+		stock_qty = in.readString();
+		stock_threshold = in.readString();
 	}
 	
 	public static final Parcelable.Creator<Product> CREATOR =

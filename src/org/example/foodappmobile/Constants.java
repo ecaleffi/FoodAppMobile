@@ -11,6 +11,8 @@ public interface Constants extends BaseColumns{
 	public static final String DESCRIPTION = "description";
 	public static final String PRICE = "price";
 	public static final String DURATION = "duration";
+	public static final String STOCK_QTY = "stock_qty";
+	public static final String STOCK_THRESHOLD = "stock_threshold";
 	
 	/* Nome della tabella che conterrà le ricette */
 	public static final String TABLE_RECIPES = "recipes";

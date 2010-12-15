@@ -25,7 +25,8 @@ public class FoodAppData extends SQLiteOpenHelper {
 		try {
 			db.execSQL("CREATE TABLE " + TABLE_PRODUCTS + " (" + _ID +
 				" INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME + " CHAR(64)," +
-				DESCRIPTION + " TEXT," + PRICE + " MONEY," + DURATION + " DATE" + ");");
+				DESCRIPTION + " TEXT," + PRICE + " MONEY," + DURATION + " DATE, " + 
+				STOCK_QTY + " INTEGER, " + STOCK_THRESHOLD + " INTEGER" + ");");
 			db.execSQL("CREATE TABLE " + TABLE_RECIPES + " (" + _ID + 
 				" INTEGER PRIMARY KEY AUTOINCREMENT, " + DESCRIPTION + " TEXT" + ");");
 			db.execSQL("CREATE TABLE " + TABLE_USES + " (" + PRODUCT_ID + " INTEGER REFERENCES PRODUCT(_ID), " +
