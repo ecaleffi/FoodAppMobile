@@ -1,6 +1,8 @@
 package org.example.foodappmobile;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -30,15 +32,26 @@ public class HttpMethods {
 	HttpContext localContext = null;
 	HttpResponse resp;
 	Cookie mycookie;
+	InetAddress myIp;
+	//String IP;
 	String IP = "http://192.168.2.6:3000/";
 	//String IP = "http://155.185.149.39:3000/";
+	//String domain;
 	String domain = "192.168.2.6";
 	//String domain = "155.185.149.39";
 	
 	
-	public HttpMethods () {}
+	public HttpMethods () {
+		try {
+	        myIp = InetAddress.getLocalHost();
+	    } catch (UnknownHostException ex) { }
+
+	}
+	
+	
 	
 	public String callWebService(String url) {
+		//IP = "http://" + myIp.getHostAddress() + ":3000/";
 		
 		url =  IP + url;
     	HttpClient httpclient = new DefaultHttpClient();  
@@ -56,6 +69,8 @@ public class HttpMethods {
 	
 	public HttpResponse postData(String url, List<NameValuePair> nvp, String cookieName, String cookieValue) {
 		
+		//IP = "http://" + myIp.getHostAddress() + ":3000/";
+		//domain = myIp.getHostAddress();
 		url = IP + url;
 		
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
@@ -100,6 +115,7 @@ public class HttpMethods {
 	}
 	
 	public StructResp postDataLogin (String url, List<NameValuePair> nvp) {
+		//IP = "http://" + myIp.getHostAddress() + ":3000/";
 		
 		url = IP + url;
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
@@ -134,6 +150,8 @@ public class HttpMethods {
 	}
 	
 	public HttpResponse postDataNoPairs(String url, String cookieName, String cookieValue) {
+		//IP = "http://" + myIp.getHostAddress() + ":3000/";
+		//domain = myIp.getHostAddress();
 		
 		url = IP + url;
 		

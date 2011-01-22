@@ -32,6 +32,11 @@ public class FoodAppData extends SQLiteOpenHelper {
 			db.execSQL("CREATE TABLE " + TABLE_USES + " (" + PRODUCT_ID + " INTEGER REFERENCES PRODUCT(_ID), " +
 				RECIPE_ID + " INTEGER REFERENCES RECIPE(_ID), " + 
 				"PRIMARY KEY (RECIPE_ID, PRODUCT_ID) " + ");");
+			db.execSQL("CREATE TABLE " + TABLE_ORDERS + " (" + _ID + 
+					" INTEGER PRIMARY KEY AUTOINCREMENT, " + NUMBER + " CHAR(20)" + ");");
+			db.execSQL("CREATE TABLE " + TABLE_ORDERS_ITEM + " (" + ORDER_ID + " INTEGER " +
+					"REFERENCES ORDERS(ID), " + ITEM + " CHAR(64), " + 
+					"PRIMARY KEY (ORDER_ID, ITEM) " + ");");
 			db.setTransactionSuccessful();
 		} catch (SQLException e) {
 			Log.e("Errore nella creazione delle tabelle", e.toString());

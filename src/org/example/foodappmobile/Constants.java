@@ -16,12 +16,17 @@ public interface Constants extends BaseColumns{
 	
 	/* Nome della tabella che conterrà le ricette */
 	public static final String TABLE_RECIPES = "recipes";
-	
 	/* Nome della tabella che conterrà le associazioni fra ricette e prodotti */
 	public static final String TABLE_USES = "uses";
 	/* Colonne della tabella uses */
 	public static final String PRODUCT_ID = "product_id";
 	public static final String RECIPE_ID = "recipe_id";
+	/* Tabella per la memorizzazione degli ordini */
+	public static final String TABLE_ORDERS = "orders";
+	public static final String NUMBER = "number";
+	public static final String TABLE_ORDERS_ITEM = "orders_item";
+	public static final String ORDER_ID = "order_id";
+	public static final String ITEM = "item";
 	
 	public static final String DB_PATH = "/data/data/org.example.foodappmobile/databases/";
 
