@@ -35,9 +35,11 @@ public class Order extends Activity implements OnClickListener{
 	
 	final String url = "rest/product";
 	final String recUrl = "rest/recipe";
+	final String ordUrl = "rest/order";
 	final String postUrl = "cart/add";
 	String result = "";
 	String resRec = "";
+	String resOrd = "";
 	/* Array di stringhe per i nomi dei prodotti*/
 	String[] name;
 	/* Array di stringhe per le descrizioni dei prodotti*/
@@ -64,6 +66,7 @@ public class Order extends Activity implements OnClickListener{
 	//private FoodAppData uses;
 	ProductList pl;
 	RecList rl;
+	OrderList ol;
 	Product tprod;
 	Recipe trec;
 	ArrayList<String> recProducts;
@@ -79,6 +82,7 @@ public class Order extends Activity implements OnClickListener{
         
         result = hm.callWebService(url);
         resRec = hm.callWebService(recUrl);
+        resOrd = hm.callWebService(ordUrl);
         System.out.println(result);
         System.out.println(resRec);
         
@@ -102,26 +106,31 @@ public class Order extends Activity implements OnClickListener{
 		
 		String jsonData = result;
 		String jsonRec = resRec;
+		String jsonOrd = resOrd;
 		GsonBuilder gsonb = new GsonBuilder();
 		Gson gson = gsonb.create();
 		JSONObject j;
 		JSONObject j2;
+		JSONObject j3;
 		
 		try {
 			j = new JSONObject(jsonData);
 			j2 = new JSONObject(jsonRec);
+			j3 = new JSONObject(jsonOrd);
 			ProductList temp = gson.fromJson(j.toString(), ProductList.class);
 			RecList tempRec = gson.fromJson(j2.toString(), RecList.class);
+			OrderList tempOrd = gson.fromJson(j3.toString(), OrderList.class);
 			prodList = temp;
 			pl = temp;
 			rl = tempRec;
+			ol = tempOrd;
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 		
-		if (pl == null || rl == null) {
+		if (pl == null || rl == null || ol == null) {
 			System.out.println("Errore nella deserializzazione JSON");
 		}
 		

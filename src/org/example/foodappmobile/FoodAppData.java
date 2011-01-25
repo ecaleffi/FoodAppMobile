@@ -54,6 +54,8 @@ public class FoodAppData extends SQLiteOpenHelper {
 			db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PRODUCTS);
 			db.execSQL("DROP TABLE IF EXISTS "+ TABLE_RECIPES);
 			db.execSQL("DROP TABLE IF EXISTS "+ TABLE_USES);
+			db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ORDERS);
+			db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ORDERS_ITEM);
 			onCreate(db);
 		} catch (SQLException e) {
 			Log.e("Errore nell'upgrade delle tabelle", e.toString());
