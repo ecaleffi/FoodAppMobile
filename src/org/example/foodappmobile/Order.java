@@ -71,6 +71,8 @@ public class Order extends Activity implements OnClickListener{
 	Recipe trec;
 	ArrayList<String> recProducts;
 	HashMap<String, List<String>> hmap;
+	ArrayList<String> ordProducts;
+	HashMap<Integer, List<String>> hmapOrd;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -139,17 +141,25 @@ public class Order extends Activity implements OnClickListener{
 		fad = new FoodAppData(this);
 		/* Controllo che il database non esista già */
 		if (!fad.isDatabaseExist()) {
+			/* Aggiungo i prodotti al database */
 			for (Product p : pl.getProds()) {
 				addProduct(p);			
 			}
 			
+			/* Aggiungo le ricette al database */
 			for (Recipe r : rl.getRecipes()) {
 				addRecipe(r);
+			}
+			
+			/* Aggiungo gli ordini al database */
+			for (DBOrders o : ol.getOrders()) {
+				addOrder(o);
 			}
 			
 			/* Salvo i prodotti associati alle ricette in un HashMap */
 			hmap = new HashMap<String, List<String>>();
 			
+			/* Aggiungo i prodotti nella tabella in relazione con le ricette */
 			for (Recipe r : rl.getRecipes()) {
 				recProducts = new ArrayList<String>();
 				for (String t : r.getProducts()) {
@@ -159,6 +169,20 @@ public class Order extends Activity implements OnClickListener{
 			}
 			
 			addUses(rl, hmap);
+			
+			/* Salvo i prodotti associati agli ordini in un HashMap*/
+			hmapOrd = new HashMap<Integer, List<String>>();
+			
+			/* Aggiungo i prodotti nella tabella in relazione con gli ordini */
+			for (DBOrders o : ol.getOrders()) {
+				ordProducts = new ArrayList<String>();
+				for (String tt : o.getProducts()) {
+					ordProducts.add(tt);
+				}
+				hmapOrd.put(o.getId(), ordProducts);
+			}
+			
+			addItem(ol, hmapOrd);
 			
 		}
 		else {
@@ -175,6 +199,7 @@ public class Order extends Activity implements OnClickListener{
 				//System.out.println(pname);
 			}
 			cursor.close();
+			db1.close();
 			
 			for (Product pr : pl.getProds()) {
 				if (! dbProd.contains(pr.getName())) {
@@ -194,6 +219,7 @@ public class Order extends Activity implements OnClickListener{
 				dbRec.add(rdesc);
 			}
 			cursor2.close();
+			db2.close();
 			
 			for (Recipe r : rl.getRecipes()) {
 				if (! dbRec.contains(r.getDescription())) {
@@ -202,6 +228,29 @@ public class Order extends Activity implements OnClickListener{
 					/* Se c'è una nuova ricetta, inserisco nella relazione uses tale ricetta con i prodotti
 					 * che contiene */
 					addUsesSingleRecipe(r);
+				}
+			}
+			
+			/* Inserisco nel database solo gli ordini che non sono già presenti */
+			SQLiteDatabase db3 = fad.getReadableDatabase();
+			String[] COL3 = {_ID};
+			Cursor cursor3 = db3.query(TABLE_ORDERS, COL3, null, null, null, null, null);
+			startManagingCursor(cursor3);
+			List<Integer> dbId = new ArrayList<Integer>();
+			while(cursor3.moveToNext()) {
+				int id = cursor3.getInt(0);
+				dbId.add(id);
+			}
+			cursor3.close();
+			db3.close();
+			
+			for (DBOrders o : ol.getOrders()) {
+				if (! dbId.contains(o.getId())) {
+					addOrder(o);
+				
+					/* Se c'è un nuovo ordine, inserisco i prodotti che contiene nella 
+					 * tabella order_items tali prodotti */
+					addItemSingleOrder(o);
 				}
 			}
 		}
@@ -433,6 +482,7 @@ public class Order extends Activity implements OnClickListener{
     	values.put(STOCK_QTY, Integer.parseInt(p.getStockQty()));
     	values.put(STOCK_THRESHOLD, Integer.parseInt(p.getStockThreshold()));
     	db.insertOrThrow(TABLE_PRODUCTS, null, values);
+    	db.close();
     }
     
     public void addRecipe(Recipe r) {
@@ -440,6 +490,16 @@ public class Order extends Activity implements OnClickListener{
     	ContentValues values = new ContentValues();
     	values.put(DESCRIPTION, r.getDescription());
     	db.insertOrThrow(TABLE_RECIPES, null, values);
+    	db.close();
+    }
+    
+    public void addOrder(DBOrders o) {
+    	SQLiteDatabase db = fad.getWritableDatabase();
+    	ContentValues values = new ContentValues();
+    	values.put(_ID, o.getId());
+    	values.put(NUMBER, o.getNumber());
+    	db.insertOrThrow(TABLE_ORDERS, null, values);
+    	db.close();
     }
     
     public void addUses(RecList rl, HashMap<String, List<String>> hmap ) {
@@ -473,7 +533,24 @@ public class Order extends Activity implements OnClickListener{
 				}
 			}
 			cursor.close();
+			db3.close();
 		}
+    }
+    
+    public void addItem(OrderList ol, HashMap<Integer, List<String>> hmapOrd) {
+    	for (DBOrders ord : ol.getOrders()) {
+    		SQLiteDatabase db = fad.getWritableDatabase();
+    		/* Ricavo dall'hashMap la lista di prodotti associata all'ordine */
+    		List<String> listp = new ArrayList<String>();
+    		listp = hmapOrd.get(ord.getId());
+    		for (String lp : listp) {
+    			ContentValues values = new ContentValues();
+    			values.put(ORDER_ID, ord.getId());
+    			values.put(ITEM, lp);
+    			db.insertOrThrow(TABLE_ORDERS_ITEM, null, values);
+    		}
+    		db.close();
+    	}
     }
     
     public void addUsesSingleRecipe(Recipe r) {
@@ -508,7 +585,25 @@ public class Order extends Activity implements OnClickListener{
 			}
 		}
 		cursor.close();
+		db3.close();
 		
+    }
+    
+    public void addItemSingleOrder (DBOrders o) {
+    	
+    	ordProducts = new ArrayList<String>();
+    	for (String p : o.getProducts()) {
+    		ordProducts.add(p);
+    	}
+    	
+    	SQLiteDatabase db = fad.getWritableDatabase();
+    	ContentValues values = new ContentValues();
+    	for (String prod : ordProducts) {
+    		values.put(ORDER_ID, o.getId());
+    		values.put(ITEM, prod);
+    		db.insertOrThrow(TABLE_ORDERS_ITEM, null, values);
+    	}
+    	db.close();
     }
     
     
