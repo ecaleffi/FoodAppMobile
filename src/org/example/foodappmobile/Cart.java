@@ -42,18 +42,27 @@ public class Cart extends Activity implements OnClickListener{
     FoodAppData fad;
     HashMap<Integer, List<Integer>> map;
     HashMap<Integer, Integer> count;
+    HashMap<Integer, List<String>> ordMap;
     /* Liste per salvare le ricette comuni ai prodotti presenti nel carrello */
     List<Integer> commonRecipe;
     HashMap<String, List<String>> recProd;
     List<String> prods;
     List<String> allProds;
     int index;
+    int cost;
+    /* HashMap per contare i prodotti uguali negli ordini */
+    HashMap<String, Integer> countOrd;
+    List<String> prodConfidenza;
+    int numOrd;
     
     /* Prodotto che può essere aggiunto scegliendolo fra gli ingredienti delle ricette
      * consigliate */
     Product newProd;
     final String postUrl = "cart/add";
     HttpMethods hm;
+    
+    /* TableLayout per la visualizzazione */
+    TableLayout tl;
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -196,6 +205,7 @@ public class Cart extends Activity implements OnClickListener{
         		cursor2.close();
         	}
         	cursor.close();
+        	db.close();
         }
         fad.close();
         
@@ -270,8 +280,21 @@ public class Cart extends Activity implements OnClickListener{
         		recProd.put(recipeDesc, prods);
         	}
         	c.close();
+        	db.close();
         }
         fad.close();
+        
+        /* Definisco un TableLayout per visualizzare su una colonna le ricette consigliate
+    	 * e nell'altra i prodotti che sono associati alle ricette. 
+    	 * Successivamente verrà utilizzato anche per visualizzare i prodotti con elevata
+    	 * confidenza */
+    	tl = new TableLayout(this);
+    	/* Setto le colonne Shrinkable in modo che se il testo è troppo lungo
+    	 * non vada ad occupare troppo spazio dell'altra colonna ma venga
+    	 * scritto a capo*/
+    	tl.setColumnShrinkable(0, true);
+    	//tl.setColumnShrinkable(1, true);
+    	tl.setColumnStretchable(1, true);
         
         if ( ! recProd.isEmpty()) {
         	/* Visualizzo nel Layout le ricette consigliate */
@@ -281,15 +304,7 @@ public class Cart extends Activity implements OnClickListener{
         	rec.setTextSize(18);
         	ll.addView(rec);
         
-        	/* Definisco un TableLayout per visualizzare su una colonna le ricette consigliate
-        	 * e nell'altra i prodotti che sono associati alle ricette */
-        	TableLayout tl = new TableLayout(this);
-        	/* Setto le colonne Shrinkable in modo che se il testo è troppo lungo
-        	 * non vada ad occupare troppo spazio dell'altra colonna ma venga
-        	 * scritto a capo*/
-        	tl.setColumnShrinkable(0, true);
-        	//tl.setColumnShrinkable(1, true);
-        	tl.setColumnStretchable(1, true);
+        	
         
         	/* La prima riga conterrà i titoli per ricette e prodotti */
         	TableRow titleRow = new TableRow(this);
@@ -338,6 +353,8 @@ public class Cart extends Activity implements OnClickListener{
         			allProds.add(prods.get(i));
         			prodName.setText(prods.get(i));
         			prodName.setGravity(Gravity.CENTER);
+        			/* Se è il primo ciclo visualizzo il primo prodotto nella stessa riga della
+        			 * ricetta */
         			if (i == 0) {
         				tr.addView(prodName);
         				/*if (! orderedString.contains(prodName)) {
@@ -347,6 +364,8 @@ public class Cart extends Activity implements OnClickListener{
         				} */
         				tl.addView(tr);
         			}
+        			/* A partire dal secondo ciclo visualizzo i prodotti in una nuova riga nella
+        			 * seconda colonna, in modo che siano allineati */
         			else {
         				TableRow tr2 = new TableRow(this);
         				TextView empty = new TextView(this);
@@ -365,7 +384,7 @@ public class Cart extends Activity implements OnClickListener{
         
         	boolean write = false;
         
-        	for (int index=0; index < allProds.size(); index++) {
+        	for (index=0; index < allProds.size(); index++) {
         		if (! orderedString.contains(allProds.get(index))) {
         			/* Se sono presenti prodotti da aggiungere visualizzo la scritta
         			 * ma soltanto una volta */
@@ -389,12 +408,6 @@ public class Cart extends Activity implements OnClickListener{
         		}
         	}
         
-        	ll.addView(tl);
-        
-        	/* Inserisco un TextView vuoto per separare il bottone dalla tabella */
-        	TextView space = new TextView(this);
-        	space.setHeight(40);
-        	ll.addView(space);
         }
         else {
         	TextView noRec = new TextView(this);
@@ -402,6 +415,128 @@ public class Cart extends Activity implements OnClickListener{
         			" nel carrello.\n");
         	ll.addView(noRec);
         }
+        
+        /* Codice per la visualizzazione dei prodotti consigliati in base alle ordinazioni
+         * fatte da tutti gli utenti all'interno dell'applicazione. Se un prodotto attualmente
+         * presente nel carrello è stato ordinato da altri utenti, allora si guardano gli altri
+         * prodotti presenti in quegli ordini. Se vi sono prodotti che compaiono con una certa
+         * frequenza, allora vengono consigliati agli utenti */
+        fad = new FoodAppData(this);
+        ordMap = new HashMap<Integer, List<String>>();
+        
+        for (int k=0; k<ordered.size(); k++) {
+        	SQLiteDatabase db = fad.getReadableDatabase();
+        	/* Definisco una query per ottenere tutti gli ordini che contengono i prodotti ordinati */
+        	String[] COL = {ORDER_ID};
+        	String where = "item = " + "\"" + ordered.get(k).getName() + "\"";
+        	Cursor cursor = db.query(TABLE_ORDERS_ITEM, COL, where, null, null, null, null);
+        	startManagingCursor(cursor);
+        	while(cursor.moveToNext()) {
+        		int ordId = cursor.getInt(0);
+        		List<String> prodOrd = new ArrayList<String>();
+        		String where2 = "order_id = " + ordId;
+        		String[] COL2 = {ITEM};
+        		Cursor cursor2 = db.query(TABLE_ORDERS_ITEM, COL2, where2, null, null, null, null);
+        		startManagingCursor(cursor2);
+        		while (cursor2.moveToNext()) {
+        			String item = cursor2.getString(0);
+        			if (! item.equals(ordered.get(k).getName())) {
+        				prodOrd.add(item);
+        			}
+        		}
+        		cursor2.close();
+        		ordMap.put(ordId, prodOrd);
+        	}
+        	cursor.close();
+        	db.close();
+        }
+        /* A questo punto ho un HashMap che ha come chiavi gli ordini che contengono i prodotti nel carrello
+         * e come valori la lista dei nomi degli altri prodotti presenti in tale ordine */
+        
+        countOrd = new HashMap<String, Integer>();
+        numOrd = 0;
+        
+        /* Iteratore che ha la funzione di fare un ciclo per ogni chiave presente nell'HashMap */
+        Iterator<Integer> iterator2 = ordMap.keySet().iterator();
+        while (iterator2.hasNext()) {
+        	int key = iterator2.next();
+        	numOrd++;
+        	List<String> pord = new ArrayList<String>();
+        	pord = ordMap.get(key);
+        	for (int x=0; x<pord.size(); x++) {
+        		if (countOrd.get(pord.get(x)) != null) {
+        			int tempVal = countOrd.get(pord.get(x));
+        			tempVal++;
+        			countOrd.put(pord.get(x), tempVal);
+        		}
+        		else {
+        			countOrd.put(pord.get(x), 1);
+        		}
+        	}
+        }
+        
+        if (numOrd != 0) {
+        	/* Ricavo gli eventuali prodotti con elevata confidenza */
+        	prodConfidenza = new ArrayList<String>();
+        	Iterator<String> it2 = countOrd.keySet().iterator();
+        	while(it2.hasNext()) {
+        		String prod = it2.next();
+        		int occurrence = countOrd.get(prod);
+        		if (occurrence > (0.5 * numOrd)) {
+        			prodConfidenza.add(prod);
+        		}
+        	}
+        }
+        /* prodConfidenza ora contiene i prodotti con elevata confidenza con quelli 
+         * presenti nel carrello */
+        for (int cur=0; cur < prodConfidenza.size(); cur++) {
+        	System.out.println("Prodotto confidenza " + cur + ": " + prodConfidenza.get(cur));
+        	//OK
+        }
+        
+        cost = index;
+        /* Visualizzo gli elementi presenti nella lista in un TableLayout*/
+        if (! prodConfidenza.isEmpty()) {
+        	TextView emptyline = new TextView(this);
+        	emptyline.setHeight(40);
+        	tl.addView(emptyline);
+        	TextView title = new TextView(this);
+        	title.setText("Prodotti con elevata confidenza");
+        	title.setTextSize((float) 16.5);
+        	title.setGravity(Gravity.CENTER_HORIZONTAL);
+        	tl.addView(title);
+        	TextView separa = new TextView(this);
+        	separa.setHeight(20);
+        	tl.addView(separa);
+        	System.out.println("cost = " + cost + ", size = "  + prodConfidenza.size());
+        	for (int i=cost; i < (cost+prodConfidenza.size()); i++) {
+        		TableRow tr = new TableRow(this);
+        		TextView prod = new TextView(this);
+        		prod.setText(prodConfidenza.get(i-cost));
+        		tr.addView(prod);
+        		if (! orderedString.contains(prodConfidenza.get(i-cost))) {
+        			Button bt = new Button(this);
+        			bt.setText("Aggiungi");
+        			bt.setId(i);
+        			bt.setOnClickListener(this);
+        			tr.addView(bt);
+        			tl.addView(tr);
+        		}
+        		else{
+        			TextView empty = new TextView(this);
+        			tr.addView(empty);
+        			tl.addView(tr);
+        		}
+        	}
+        	/* Aggiungo la tabella al LinearLayout */
+        	ll.addView(tl);
+            
+            /* Inserisco un TextView vuoto per separare il bottone dalla tabella */
+        	TextView space = new TextView(this);
+        	space.setHeight(40);
+        	ll.addView(space);
+        }
+        
          
         /* Aggiungo il bottone per fare il checkout */
         LinearLayout bt = new LinearLayout(this);
@@ -426,6 +561,7 @@ public class Cart extends Activity implements OnClickListener{
     public void onClick (View v) {
     	
     	int id = v.getId();
+    	System.out.println("id = " + id);
     	
     	if ( id == 999 ) {
     		HttpMethods hm = new HttpMethods();
@@ -446,24 +582,50 @@ public class Cart extends Activity implements OnClickListener{
     	else {
     		//System.out.println("Premuto il pulsante con id = "+id);
     		//System.out.println("Corrisponde al prodotto -> " + allProds.get(id));
-    		fad = new FoodAppData(this);
-    		SQLiteDatabase db = fad.getReadableDatabase();
-    		String[] COL = {DESCRIPTION, PRICE};
-    		String where = NAME + " = " + "\"" + allProds.get(id) + "\"";
-    		Cursor c = db.query(TABLE_PRODUCTS, COL, where, null, null, null, null);
-    		startManagingCursor(c);
-    		while(c.moveToNext()) {
-    			String description = c.getString(0);
-    			String price = c.getString(1);
-    			newProd = new Product();
-    			newProd.setName(allProds.get(id));
-    			newProd.setDescription(description);
-    			newProd.setPrice(price);
-    			newProd.setQuantity("1");
-    			ordered.add(newProd);
+    		if (id < cost) {
+    			System.out.println("Premuto il pulsante con id = "+id);
+        		System.out.println("Corrisponde al prodotto -> " + allProds.get(id));
+    			fad = new FoodAppData(this);
+    			SQLiteDatabase db = fad.getReadableDatabase();
+    			String[] COL = {DESCRIPTION, PRICE};
+    			String where = NAME + " = " + "\"" + allProds.get(id) + "\"";
+    			Cursor c = db.query(TABLE_PRODUCTS, COL, where, null, null, null, null);
+    			startManagingCursor(c);
+    			while(c.moveToNext()) {
+    				String description = c.getString(0);
+    				String price = c.getString(1);
+    				newProd = new Product();
+    				newProd.setName(allProds.get(id));
+    				newProd.setDescription(description);
+    				newProd.setPrice(price);
+    				newProd.setQuantity("1");
+    				ordered.add(newProd);
+    			}
+    			c.close();
+    			fad.close();
     		}
-    		c.close();
-    		fad.close();
+    		else {
+    			System.out.println("Premuto il pulsante con id = "+id);
+        		System.out.println("Corrisponde al prodotto -> " + prodConfidenza.get(id - cost));
+    			fad = new FoodAppData(this);
+        		SQLiteDatabase db = fad.getReadableDatabase();
+        		String[] COL = {DESCRIPTION, PRICE};
+        		String where = NAME + " = " + "\"" + prodConfidenza.get(id - cost) + "\"";
+        		Cursor c = db.query(TABLE_PRODUCTS, COL, where, null, null, null, null);
+        		startManagingCursor(c);
+        		while(c.moveToNext()) {
+        			String description = c.getString(0);
+        			String price = c.getString(1);
+        			newProd = new Product();
+        			newProd.setName(prodConfidenza.get(id - cost));
+        			newProd.setDescription(description);
+        			newProd.setPrice(price);
+        			newProd.setQuantity("1");
+        			ordered.add(newProd);
+        		}
+        		c.close();
+        		fad.close();
+    		}
     		
     		if (newProd != null) {
     			
