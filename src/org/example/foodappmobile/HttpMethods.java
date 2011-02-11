@@ -34,10 +34,10 @@ public class HttpMethods {
 	Cookie mycookie;
 	InetAddress myIp;
 	//String IP;
-	String IP = "http://192.168.2.6:3000/";
+	String IP = "http://192.168.2.7:3000/";
 	//String IP = "http://155.185.149.39:3000/";
 	//String domain;
-	String domain = "192.168.2.6";
+	String domain = "192.168.2.7";
 	//String domain = "155.185.149.39";
 	
 	

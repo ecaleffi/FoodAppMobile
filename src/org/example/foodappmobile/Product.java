@@ -77,12 +77,10 @@ public class Product implements Parcelable{
 		readFromParcel(in);
 	}
 	
-	@Override
 	public int describeContents() {
 		return 0;
 	}
 	
-	@Override
 	public void writeToParcel(Parcel dest, int flags) {
  
 		// We just need to write each field into the
