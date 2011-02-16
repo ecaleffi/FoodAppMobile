@@ -17,7 +17,7 @@ public class Select extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);  
         setContentView(R.layout.select);
         
-        /* Recupero i valori passati come parametro dall'attivit√† chiamante*/
+        /* Recupero i valori passati come parametro dall'attività chiamante*/
         Bundle b = getIntent().getExtras();
         strCookieValue = b.getString(strCookieName);
         
@@ -27,6 +27,8 @@ public class Select extends Activity implements OnClickListener {
         recipeButton.setOnClickListener(this);
         View orderButton = findViewById(R.id.order_button);
         orderButton.setOnClickListener(this);
+        View machineButton = findViewById(R.id.machine_button);
+        machineButton.setOnClickListener(this);
         
     }
     
@@ -51,6 +53,13 @@ public class Select extends Activity implements OnClickListener {
 				bundle2.putString(strCookieName, strCookieValue);
 				order.putExtras(bundle2);
         		startActivity(order);
+        		break;
+        	case R.id.machine_button:
+        		Intent machine = new Intent(this, MachineActivity.class);
+        		Bundle bundle3 = new Bundle();
+				bundle3.putString(strCookieName, strCookieValue);
+				machine.putExtras(bundle3);
+        		startActivity(machine);
         		break;
         }
     }

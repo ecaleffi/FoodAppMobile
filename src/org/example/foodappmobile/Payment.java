@@ -86,7 +86,7 @@ public class Payment extends Activity {
     	/* Eseguo la validazione dei campi inseriti dall'utente tramite regex*/
     	/* Creo un array di stringhe con i possibili errori*/
     	String[] err = new String[10];
-    	err[0] = "Il campo Nome sulla carta di credito non pu√≤ essere lasciato vuoto";
+    	err[0] = "Il campo Nome sulla carta di credito non può essere lasciato vuoto";
     	err[1] = "Il numero della carta di credito deve contenere solo cifre";
     	err[2] = "Il numero della carta di credito deve contenere da 12 a 16 cifre";
     	err[3] = "Il mese di scadenza della carta deve contenere solo cifre";

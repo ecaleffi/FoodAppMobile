@@ -55,7 +55,7 @@ public class Cart extends Activity implements OnClickListener{
     List<String> prodConfidenza;
     int numOrd;
     
-    /* Prodotto che pu√≤ essere aggiunto scegliendolo fra gli ingredienti delle ricette
+    /* Prodotto che può essere aggiunto scegliendolo fra gli ingredienti delle ricette
      * consigliate */
     Product newProd;
     final String postUrl = "cart/add";
@@ -139,7 +139,7 @@ public class Cart extends Activity implements OnClickListener{
         	price[i].setText("Prezzo: " + ordered.get(i).getPrice() );
         	ll.addView(price[i]);
         	qty[i] = new TextView(this);
-        	qty[i].setText("Quantit√†: " + ordered.get(i).getQuantity() );
+        	qty[i].setText("Quantità: " + ordered.get(i).getQuantity() );
         	ll.addView(qty[i]);
         	tot[i] = new TextView(this);
         	tot[i].setText("\nTotale: " + ordered.get(i).getTot() );
@@ -175,7 +175,7 @@ public class Cart extends Activity implements OnClickListener{
         
         /* Codice per visualizzare le ricette */
         /* Descrizione: prendo ciascun prodotto dalla lista dei prodotti ordinati, ricavo il suo id nel
-         * database, vado a vedere se nella tabella uses tale id √® associato a una qualche ricetta,
+         * database, vado a vedere se nella tabella uses tale id è associato a una qualche ricetta,
          * salvo l'id della ricetta e poi vedo quali ricette sono state trovate.
          * Se prodotti diversi sono associati a ricette diverse, faccio l'intersezione fra le ricette per 
          * visualizzare solamente le ricette comuni a tutti i prodotti */
@@ -240,7 +240,7 @@ public class Cart extends Activity implements OnClickListener{
         	int keyInt = Integer.parseInt(key);
         	int val = count.get(keyInt);
         	/* Controllo che il valore delle occorrenze di una ricetta sia uguale al numero di prodotti ordinati:
-        	 * in caso affermativo significa che la ricetta √® comune a tutti i prodotti presenti nel carrello */
+        	 * in caso affermativo significa che la ricetta è comune a tutti i prodotti presenti nel carrello */
         	if (val == ordered.size()) {
         		System.out.println(" La ricetta con id " + keyInt + " e\' comune a tutti i prodotti ordinati.");
         		commonRecipe.add(keyInt);
@@ -286,10 +286,10 @@ public class Cart extends Activity implements OnClickListener{
         
         /* Definisco un TableLayout per visualizzare su una colonna le ricette consigliate
     	 * e nell'altra i prodotti che sono associati alle ricette. 
-    	 * Successivamente verr√† utilizzato anche per visualizzare i prodotti con elevata
+    	 * Successivamente verrà utilizzato anche per visualizzare i prodotti con elevata
     	 * confidenza */
     	tl = new TableLayout(this);
-    	/* Setto le colonne Shrinkable in modo che se il testo √® troppo lungo
+    	/* Setto le colonne Shrinkable in modo che se il testo è troppo lungo
     	 * non vada ad occupare troppo spazio dell'altra colonna ma venga
     	 * scritto a capo*/
     	tl.setColumnShrinkable(0, true);
@@ -306,7 +306,7 @@ public class Cart extends Activity implements OnClickListener{
         
         	
         
-        	/* La prima riga conterr√† i titoli per ricette e prodotti */
+        	/* La prima riga conterrà i titoli per ricette e prodotti */
         	TableRow titleRow = new TableRow(this);
         	TextView titleRecipe = new TextView(this);
         	titleRecipe.setText("Ricette");
@@ -353,7 +353,7 @@ public class Cart extends Activity implements OnClickListener{
         			allProds.add(prods.get(i));
         			prodName.setText(prods.get(i));
         			prodName.setGravity(Gravity.CENTER);
-        			/* Se √® il primo ciclo visualizzo il primo prodotto nella stessa riga della
+        			/* Se è il primo ciclo visualizzo il primo prodotto nella stessa riga della
         			 * ricetta */
         			if (i == 0) {
         				tr.addView(prodName);
@@ -411,14 +411,14 @@ public class Cart extends Activity implements OnClickListener{
         }
         else {
         	TextView noRec = new TextView(this);
-        	noRec.setText("\nNon vi √® alcuna ricetta consigliata per i prodotti presenti" +
+        	noRec.setText("\nNon vi è alcuna ricetta consigliata per i prodotti presenti" +
         			" nel carrello.\n");
         	ll.addView(noRec);
         }
         
         /* Codice per la visualizzazione dei prodotti consigliati in base alle ordinazioni
          * fatte da tutti gli utenti all'interno dell'applicazione. Se un prodotto attualmente
-         * presente nel carrello √® stato ordinato da altri utenti, allora si guardano gli altri
+         * presente nel carrello è stato ordinato da altri utenti, allora si guardano gli altri
          * prodotti presenti in quegli ordini. Se vi sono prodotti che compaiono con una certa
          * frequenza, allora vengono consigliati agli utenti */
         fad = new FoodAppData(this);

@@ -74,7 +74,7 @@ public class HttpMethods {
 		url = IP + url;
 		
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
-		// versione di HTTP 1.1; in questo modo la risposta √® molto pi√π performante
+		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
 		HttpParams params = new BasicHttpParams();
 		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		
@@ -119,7 +119,7 @@ public class HttpMethods {
 		
 		url = IP + url;
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
-		// versione di HTTP 1.1; in questo modo la risposta √® molto pi√π performante
+		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
 		HttpParams params = new BasicHttpParams();
 		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		
@@ -156,7 +156,7 @@ public class HttpMethods {
 		url = IP + url;
 		
 		//Serve per fare in modo che il metodo POST venga gestito tramite la 
-		// versione di HTTP 1.1; in questo modo la risposta √® molto pi√π performante
+		// versione di HTTP 1.1; in questo modo la risposta è molto più performante
 		HttpParams params = new BasicHttpParams();
 		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		

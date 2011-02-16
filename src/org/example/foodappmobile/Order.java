@@ -1,20 +1,13 @@
 package org.example.foodappmobile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,20 +26,15 @@ import static org.example.foodappmobile.Constants.*;
 
 public class Order extends Activity implements OnClickListener{
 	
-	final String url = "rest/product";
-	final String recUrl = "rest/recipe";
-	final String ordUrl = "rest/order";
 	final String postUrl = "cart/add";
-	String result = "";
-	String resRec = "";
-	String resOrd = "";
+	
 	/* Array di stringhe per i nomi dei prodotti*/
 	String[] name;
 	/* Array di stringhe per le descrizioni dei prodotti*/
 	String[] desc;
 	/* Array di stringhe per i prezzi dei prodotti*/
 	String[] price;
-	/* Array di EditText per recuperare le quantit√† inserite*/
+	/* Array di EditText per recuperare le quantità inserite*/
 	EditText[] qty;
 	/* Context Http locale per aggiungere i cookie alla richiesta POST*/
 	HttpContext localContext = null;
@@ -61,18 +49,7 @@ public class Order extends Activity implements OnClickListener{
 	HttpMethods hm = new HttpMethods();
 	/* Variabile per accedere al database*/
 	private FoodAppData fad;
-	//private FoodAppData products;
-	//private FoodAppData recipes;
-	//private FoodAppData uses;
-	ProductList pl;
-	RecList rl;
-	OrderList ol;
-	Product tprod;
-	Recipe trec;
-	ArrayList<String> recProducts;
-	HashMap<String, List<String>> hmap;
-	ArrayList<String> ordProducts;
-	HashMap<Integer, List<String>> hmapOrd;
+	
 	
 	/** Called when the activity is first created. */  
     @Override  
@@ -82,19 +59,13 @@ public class Order extends Activity implements OnClickListener{
         Bundle b = getIntent().getExtras();
         strCookieValue = b.getString(strCookieName);
         
-        result = hm.callWebService(url);
-        resRec = hm.callWebService(recUrl);
-        resOrd = hm.callWebService(ordUrl);
-        System.out.println(result);
-        System.out.println(resRec);
-        
         /* Definisco un LinearLayout per visualizzare gli elementi nella pagina*/
         LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setBackgroundResource(R.color.background);
         
-        /* LinearLayout per visualizzare orizzontalmente una label per la quantit√† 
-         * e l'EditText per inserire la quantit√† richiesta*/
+        /* LinearLayout per visualizzare orizzontalmente una label per la quantità 
+         * e l'EditText per inserire la quantità richiesta*/
         LinearLayout edit;
         /* LinearLayout per visualizzare il bottone per il carrello*/
         LinearLayout layCart;
@@ -106,155 +77,14 @@ public class Order extends Activity implements OnClickListener{
         ProductList prodList = null; //Variabile per salvare la lista di prodotti
 		int numProd = 0;	//Variabile per contare il numero di prodotti
 		
-		String jsonData = result;
-		String jsonRec = resRec;
-		String jsonOrd = resOrd;
-		GsonBuilder gsonb = new GsonBuilder();
-		Gson gson = gsonb.create();
-		JSONObject j;
-		JSONObject j2;
-		JSONObject j3;
-		
-		try {
-			j = new JSONObject(jsonData);
-			j2 = new JSONObject(jsonRec);
-			j3 = new JSONObject(jsonOrd);
-			ProductList temp = gson.fromJson(j.toString(), ProductList.class);
-			RecList tempRec = gson.fromJson(j2.toString(), RecList.class);
-			OrderList tempOrd = gson.fromJson(j3.toString(), OrderList.class);
-			prodList = temp;
-			pl = temp;
-			rl = tempRec;
-			ol = tempOrd;
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		if (pl == null || rl == null || ol == null) {
-			System.out.println("Errore nella deserializzazione JSON");
-		}
-		
-		/* Inserisco i prodotti nel database */
-		//products = new FoodAppData(this);
+		/* Utilizzo la classe FoodAppData per creare o aggiornare il database */
 		fad = new FoodAppData(this);
-		/* Controllo che il database non esista gi√† */
-		if (!fad.isDatabaseExist()) {
-			/* Aggiungo i prodotti al database */
-			for (Product p : pl.getProds()) {
-				addProduct(p);			
-			}
-			
-			/* Aggiungo le ricette al database */
-			for (Recipe r : rl.getRecipes()) {
-				addRecipe(r);
-			}
-			
-			/* Aggiungo gli ordini al database */
-			for (DBOrders o : ol.getOrders()) {
-				addOrder(o);
-			}
-			
-			/* Salvo i prodotti associati alle ricette in un HashMap */
-			hmap = new HashMap<String, List<String>>();
-			
-			/* Aggiungo i prodotti nella tabella in relazione con le ricette */
-			for (Recipe r : rl.getRecipes()) {
-				recProducts = new ArrayList<String>();
-				for (String t : r.getProducts()) {
-					recProducts.add(t);
-				}
-				hmap.put(r.getDescription(), recProducts);
-			}
-			
-			addUses(rl, hmap);
-			
-			/* Salvo i prodotti associati agli ordini in un HashMap*/
-			hmapOrd = new HashMap<Integer, List<String>>();
-			
-			/* Aggiungo i prodotti nella tabella in relazione con gli ordini */
-			for (DBOrders o : ol.getOrders()) {
-				ordProducts = new ArrayList<String>();
-				for (String tt : o.getProducts()) {
-					ordProducts.add(tt);
-				}
-				hmapOrd.put(o.getId(), ordProducts);
-			}
-			
-			addItem(ol, hmapOrd);
-			
+		fad.creaAggiornaDB();
+		prodList = fad.getProducts();
+		
+		for (Product p : prodList.getProds()) {
+			System.out.println(p.getName());
 		}
-		else {
-			/* Inserisco nel database solo i prodotti che non sono gi√† presenti */
-			SQLiteDatabase db1 = fad.getReadableDatabase();
-			String[] COL = {NAME};
-			Cursor cursor = db1.query(TABLE_PRODUCTS, COL, null, null, null, null, null);
-			startManagingCursor(cursor);
-			List<String> dbProd = new ArrayList<String>();
-			
-			while (cursor.moveToNext()) {
-				String pname = cursor.getString(0);
-				dbProd.add(pname);
-				//System.out.println(pname);
-			}
-			cursor.close();
-			db1.close();
-			
-			for (Product pr : pl.getProds()) {
-				if (! dbProd.contains(pr.getName())) {
-					addProduct(pr);
-				}
-			}
-			
-			/* Inserisco nel database solo le ricette che non sono gi√† presenti */
-			SQLiteDatabase db2 = fad.getReadableDatabase();
-			String[] COL2 = {DESCRIPTION};
-			Cursor cursor2 = db2.query(TABLE_RECIPES, COL2, null, null, null, null, null);
-			startManagingCursor(cursor2);
-			List<String> dbRec = new ArrayList<String>();
-			
-			while (cursor2.moveToNext()) {
-				String rdesc = cursor2.getString(0);
-				dbRec.add(rdesc);
-			}
-			cursor2.close();
-			db2.close();
-			
-			for (Recipe r : rl.getRecipes()) {
-				if (! dbRec.contains(r.getDescription())) {
-					addRecipe(r);
-					
-					/* Se c'√® una nuova ricetta, inserisco nella relazione uses tale ricetta con i prodotti
-					 * che contiene */
-					addUsesSingleRecipe(r);
-				}
-			}
-			
-			/* Inserisco nel database solo gli ordini che non sono gi√† presenti */
-			SQLiteDatabase db3 = fad.getReadableDatabase();
-			String[] COL3 = {_ID};
-			Cursor cursor3 = db3.query(TABLE_ORDERS, COL3, null, null, null, null, null);
-			startManagingCursor(cursor3);
-			List<Integer> dbId = new ArrayList<Integer>();
-			while(cursor3.moveToNext()) {
-				int id = cursor3.getInt(0);
-				dbId.add(id);
-			}
-			cursor3.close();
-			db3.close();
-			
-			for (DBOrders o : ol.getOrders()) {
-				if (! dbId.contains(o.getId())) {
-					addOrder(o);
-				
-					/* Se c'√® un nuovo ordine, inserisco i prodotti che contiene nella 
-					 * tabella order_items tali prodotti */
-					addItemSingleOrder(o);
-				}
-			}
-		}
-		fad.close();
 		
 		/* Numero di prodotti presenti nella lista*/
 		numProd = prodList.getProds().size();
@@ -271,12 +101,12 @@ public class Order extends Activity implements OnClickListener{
 		TextView[] prodDesc = new TextView[numProd];
 		/* Array di TextView per visualizzare i prezzi dei prodotti*/
 		TextView[] prodPrice = new TextView[numProd];
-		/* Array di TextView per visualizzare la quantit√† del prodotto*/
+		/* Array di TextView per visualizzare la quantità del prodotto*/
 		TextView[] prodQty = new TextView[numProd];
-		/* Array di EditText per inserire la quantit√† del prodotto*/
+		/* Array di EditText per inserire la quantità del prodotto*/
 		EditText[] editQty = new EditText[numProd];
-		/* Inizializzo l'array esterno che mi servir√† per recuperare i valori
-		 * di quantit√† inseriti*/
+		/* Inizializzo l'array esterno che mi servirà per recuperare i valori
+		 * di quantità inseriti*/
 		qty = new EditText[numProd];
 		/* Definisco una vista piccola per separare i vari prodotti*/
 		View[] sep = new View[numProd];
@@ -307,11 +137,11 @@ public class Order extends Activity implements OnClickListener{
 			prodPrice[i].setText(price[i]);
 			ll.addView(prodPrice[i]);
 			/* Aggiungo un nuovo LinearLayout per visualizzare orizzontalmente 
-			 * la label della quantit√† e il campo per modificarla*/
+			 * la label della quantità e il campo per modificarla*/
 			edit = new LinearLayout(this);
 	        edit.setOrientation(LinearLayout.HORIZONTAL);
 			prodQty[i] = new TextView(this);
-			prodQty[i].setText("Quantit√†: ");
+			prodQty[i].setText("Quantità: ");
 			edit.addView(prodQty[i]);
 			editQty[i] = new EditText(this);
 			editQty[i].setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -363,7 +193,7 @@ public class Order extends Activity implements OnClickListener{
 		if (id == 999) { 	// Id associato al pulsante per visualizzare il carrello
 			if (ordered.size() == 0) { 	// Controllo che sia stato selezionato almeno un prodotto
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        		builder.setMessage("Non hai selezionato alcun prodotto! Il carrello √® vuoto.")
+        		builder.setMessage("Non hai selezionato alcun prodotto! Il carrello è vuoto.")
         			.setCancelable(false)
         			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
         				public void onClick(DialogInterface dialog, int id) {
@@ -388,7 +218,7 @@ public class Order extends Activity implements OnClickListener{
 		}
 		
 		else {
-			/* Controllo che la quantit√† richiesta del prodotto sia disponibile */
+			/* Controllo che la quantità richiesta del prodotto sia disponibile */
 			int qty_available = 0;
 			fad = new FoodAppData(this);
 			SQLiteDatabase db = fad.getReadableDatabase();
@@ -400,11 +230,11 @@ public class Order extends Activity implements OnClickListener{
 				qty_available = c.getInt(0);
 			}
 			
-			/* Controllo che la quantit√† inserita sia in un formato accettabile*/
+			/* Controllo che la quantità inserita sia in un formato accettabile*/
 			int q = Integer.parseInt(qty[id].getText().toString());
 			if (! (( q > 0) && (q < 1000)) ) {
 				AlertDialog.Builder quant = new AlertDialog.Builder(this);
-        		quant.setMessage("La quantit√† deve essere un numero intero maggiore di 0 e minore di 1000")
+        		quant.setMessage("La quantità deve essere un numero intero maggiore di 0 e minore di 1000")
         			.setCancelable(false)
         			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
         				public void onClick(DialogInterface dialog, int id) {
@@ -415,8 +245,8 @@ public class Order extends Activity implements OnClickListener{
 			}
 			else if (q > qty_available) {
 				AlertDialog.Builder qty_error = new AlertDialog.Builder(this);
-        		qty_error.setMessage("La quantit√† di prodotto richiesta non √® disponibile. La quantit√† massima" +
-        				" che √® possibile ordinare √®: " + qty_available)
+        		qty_error.setMessage("La quantità di prodotto richiesta non è disponibile. La quantità massima" +
+        				" che è possibile ordinare è: " + qty_available)
         			.setCancelable(false)
         			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
         				public void onClick(DialogInterface dialog, int id) {
@@ -449,7 +279,7 @@ public class Order extends Activity implements OnClickListener{
 				 * inserimento del prodotto nel carrello*/
 				if (resp != null) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setMessage("Il prodotto √® stato inserito correttamente nel carrello")
+					builder.setMessage("Il prodotto è stato inserito correttamente nel carrello")
             			.setCancelable(false)
             			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
             				public void onClick(DialogInterface dialog, int id) {
@@ -471,140 +301,5 @@ public class Order extends Activity implements OnClickListener{
 		}
            
 	} // Fine onClick
-    
-    public void addProduct(Product p) {
-    	SQLiteDatabase db = fad.getWritableDatabase();
-    	ContentValues values = new ContentValues();
-    	values.put(NAME, p.getName());
-    	values.put(DESCRIPTION, p.getDescription());
-    	values.put(PRICE, p.getPrice());
-    	values.put(DURATION, "2012-01-01");
-    	values.put(STOCK_QTY, Integer.parseInt(p.getStockQty()));
-    	values.put(STOCK_THRESHOLD, Integer.parseInt(p.getStockThreshold()));
-    	db.insertOrThrow(TABLE_PRODUCTS, null, values);
-    	db.close();
-    }
-    
-    public void addRecipe(Recipe r) {
-    	SQLiteDatabase db = fad.getWritableDatabase();
-    	ContentValues values = new ContentValues();
-    	values.put(DESCRIPTION, r.getDescription());
-    	db.insertOrThrow(TABLE_RECIPES, null, values);
-    	db.close();
-    }
-    
-    public void addOrder(DBOrders o) {
-    	SQLiteDatabase db = fad.getWritableDatabase();
-    	ContentValues values = new ContentValues();
-    	values.put(_ID, o.getId());
-    	values.put(NUMBER, o.getNumber());
-    	db.insertOrThrow(TABLE_ORDERS, null, values);
-    	db.close();
-    }
-    
-    public void addUses(RecList rl, HashMap<String, List<String>> hmap ) {
-    	for (Recipe rec : rl.getRecipes()) {
-			/* Ricavo dall'HashMap la lista dei prodotti associata alla ricetta */
-			List<String> lsprod = new ArrayList<String>();
-			lsprod = hmap.get(rec.getDescription());
-			
-			/* Definisco una query per ricavare l'id delle ricette data la descrizione */
-			SQLiteDatabase db3 = fad.getWritableDatabase();
-			String[] COL = {_ID};
-			String where = "description = " + "\"" + rec.getDescription() + "\"";
-			Cursor cursor = db3.query(TABLE_RECIPES, COL, where, null, null, null, null);
-			startManagingCursor(cursor);
-			while(cursor.moveToNext()) {
-				int id = cursor.getInt(0);
-				for (int i=0; i<lsprod.size(); i++) {
-					/* Definisco una query per ricavare l'id dei prodotti dato il nome */
-					String where2 = "name = " + "\"" + lsprod.get(i) + "\"";
-					Cursor c2 = db3.query(TABLE_PRODUCTS, COL, where2, null, null, null, null);
-					startManagingCursor(c2);
-					while (c2.moveToNext()) {
-						/* Inserisco i valori trovati nella tabella uses */
-						int prod_id = c2.getInt(0);
-						ContentValues values = new ContentValues();
-						values.put(RECIPE_ID, id);
-						values.put(PRODUCT_ID, prod_id);
-						db3.insertOrThrow(TABLE_USES, null, values);
-					}
-					c2.close();
-				}
-			}
-			cursor.close();
-			db3.close();
-		}
-    }
-    
-    public void addItem(OrderList ol, HashMap<Integer, List<String>> hmapOrd) {
-    	for (DBOrders ord : ol.getOrders()) {
-    		SQLiteDatabase db = fad.getWritableDatabase();
-    		/* Ricavo dall'hashMap la lista di prodotti associata all'ordine */
-    		List<String> listp = new ArrayList<String>();
-    		listp = hmapOrd.get(ord.getId());
-    		for (String lp : listp) {
-    			ContentValues values = new ContentValues();
-    			values.put(ORDER_ID, ord.getId());
-    			values.put(ITEM, lp);
-    			db.insertOrThrow(TABLE_ORDERS_ITEM, null, values);
-    		}
-    		db.close();
-    	}
-    }
-    
-    public void addUsesSingleRecipe(Recipe r) {
-    	
-    	recProducts = new ArrayList<String>();
-		for (String t : r.getProducts()) {
-			recProducts.add(t);
-		}
-		
-		/* Definisco una query per ricavare l'id della ricetta data la descrizione */
-		SQLiteDatabase db3 = fad.getWritableDatabase();
-		String[] COL = {_ID};
-		String where = "description = " + "\"" + r.getDescription() + "\"";
-		Cursor cursor = db3.query(TABLE_RECIPES, COL, where, null, null, null, null);
-		startManagingCursor(cursor);
-		while(cursor.moveToNext()) {
-			int id = cursor.getInt(0);
-			for (int i=0; i<recProducts.size(); i++) {
-				/* Definisco una query per ricavare l'id dei prodotti dato il nome */
-				String where2 = "name = " + "\"" + recProducts.get(i) + "\"";
-				Cursor c2 = db3.query(TABLE_PRODUCTS, COL, where2, null, null, null, null);
-				startManagingCursor(c2);
-				while (c2.moveToNext()) {
-					/* Inserisco i valori trovati nella tabella uses */
-					int prod_id = c2.getInt(0);
-					ContentValues values = new ContentValues();
-					values.put(RECIPE_ID, id);
-					values.put(PRODUCT_ID, prod_id);
-					db3.insertOrThrow(TABLE_USES, null, values);
-				}
-				c2.close();
-			}
-		}
-		cursor.close();
-		db3.close();
-		
-    }
-    
-    public void addItemSingleOrder (DBOrders o) {
-    	
-    	ordProducts = new ArrayList<String>();
-    	for (String p : o.getProducts()) {
-    		ordProducts.add(p);
-    	}
-    	
-    	SQLiteDatabase db = fad.getWritableDatabase();
-    	ContentValues values = new ContentValues();
-    	for (String prod : ordProducts) {
-    		values.put(ORDER_ID, o.getId());
-    		values.put(ITEM, prod);
-    		db.insertOrThrow(TABLE_ORDERS_ITEM, null, values);
-    	}
-    	db.close();
-    }
-    
     
 }

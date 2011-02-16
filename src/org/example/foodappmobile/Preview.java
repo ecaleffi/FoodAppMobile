@@ -40,7 +40,7 @@ public class Preview extends Activity implements OnClickListener{
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
         
-        /* Recupero i valori passati come parametro dall'attivit√† chiamante*/
+        /* Recupero i valori passati come parametro dall'attività chiamante*/
         Bundle b = getIntent().getExtras();
         ordered = b.getParcelableArrayList("orderedProducts");
         mo = b.getParcelable("orderDetails");
@@ -68,7 +68,7 @@ public class Preview extends Activity implements OnClickListener{
         /* Definisco un TableLayout per visualizzare su due colonne i dettagli
          * relativi a Fatturazione e Spedizione inseriti dall'utente*/
         TableLayout tl = new TableLayout(this);
-        /* Setto le colonne Shrinkable in modo che se il testo √® troppo lungo
+        /* Setto le colonne Shrinkable in modo che se il testo è troppo lungo
          * non vada ad occupare troppo spazio dell'altra colonna ma venga
          * scritto a capo*/
         tl.setColumnShrinkable(0, true);
@@ -77,7 +77,7 @@ public class Preview extends Activity implements OnClickListener{
         /* Array di TableRow per visualizzare le righe della tabella*/
         TableRow[] tr = new TableRow[12];
         
-        /* La prima riga conterr√† i titoli per fatturazione e spedizione*/
+        /* La prima riga conterrà i titoli per fatturazione e spedizione*/
         tr[0] = new TableRow(this);
         TextView fat = new TextView(this);
         fat.setText("Fatturazione");
@@ -133,10 +133,10 @@ public class Preview extends Activity implements OnClickListener{
         
         tr[4] = new TableRow(this);
         ordDet[6] = new TextView(this);
-        ordDet[6].setText("Citt√†: "+ mo.getBillToCity());
+        ordDet[6].setText("Città: "+ mo.getBillToCity());
         tr[4].addView(ordDet[6]);
         ordDet[7] = new TextView(this);
-        ordDet[7].setText("Citt√†: "+ mo.getShipToCity());
+        ordDet[7].setText("Città: "+ mo.getShipToCity());
         tr[4].addView(ordDet[7]);
         tl.addView(tr[4]);
         
@@ -257,7 +257,7 @@ public class Preview extends Activity implements OnClickListener{
         	price[i].setText("Prezzo: " + ordered.get(i).getPrice() );
         	ll.addView(price[i]);
         	qty[i] = new TextView(this);
-        	qty[i].setText("Quantit√†: " + ordered.get(i).getQuantity() );
+        	qty[i].setText("Quantità: " + ordered.get(i).getQuantity() );
         	ll.addView(qty[i]);
         	tot[i] = new TextView(this);
         	tot[i].setText("\nTotale: " + ordered.get(i).getTot() );
@@ -296,7 +296,7 @@ public class Preview extends Activity implements OnClickListener{
         handling = 0.0;
         shipping = 5.0;
         sum = subTotale + tax + handling + shipping;
-        /* Stringhe per la visualizzazione delle quantit√† sopra indicate*/
+        /* Stringhe per la visualizzazione delle quantità sopra indicate*/
         String strTax, strHand, strShip, strSum;
         strTax = twoDec.format(tax);
         strTax = "" + strTax;

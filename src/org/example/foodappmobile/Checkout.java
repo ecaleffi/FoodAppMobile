@@ -27,7 +27,7 @@ public class Checkout extends Activity{
 	HttpContext localContext = null;
 	ArrayList<Product> ordered;
 	HttpResponse resp;
-	/* Istanza della classe MyOrder da passare all'attivit√† Preview
+	/* Istanza della classe MyOrder da passare all'attività Preview
 	 * per visualizzare i dati dell'ordinazione*/
 	MyOrder mo;
 	HttpMethods hm = new HttpMethods();
@@ -73,7 +73,7 @@ public class Checkout extends Activity{
             	final EditText txtShipToFax = (EditText)findViewById(R.id.shiptofax);
             	final EditText txtShipToEmail = (EditText)findViewById(R.id.shiptoemail);
         		
-            	/* Controllo se il checkbox √® selezionato */
+            	/* Controllo se il checkbox è selezionato */
             	if (cb.isChecked()) {
                 	/* Setto le informazioni di spedizione uguali a quelle di fatturazione */
                 	txtShipToFirstName.setText(txtBillToFirstName.getText().toString());
@@ -137,7 +137,7 @@ public class Checkout extends Activity{
             			txtShipToFirstName, txtShipToLastName, txtShipToAddress1, txtShipToCity, txtShipToState, txtShipToZip, 
             			txtShipToCountry, txtShipToDayPhone, txtShipToNightPhone, txtShipToFax, txtShipToEmail, txtComments))
             	{
-            		/* Se arrivo qui significa che la validazione √® passata */
+            		/* Se arrivo qui significa che la validazione è passata */
             	
             		/* Istanzio l'oggetto MyOrder da passare*/
             		mo = new MyOrder();
@@ -217,7 +217,7 @@ public class Checkout extends Activity{
     			txtShipToState.getText().toString().equals("") || txtShipToZip.getText().toString().equals("") ||
     			txtShipToCountry.getText().toString().equals("") || txtShipToEmail.getText().toString().equals("")) {
     		AlertDialog.Builder notBlank = new AlertDialog.Builder(this);
-    		notBlank.setMessage("I campi Nome, Cognome, Indirizzo, Citt√†, Regione, CAP, Stato ed Email sia della" +
+    		notBlank.setMessage("I campi Nome, Cognome, Indirizzo, Città, Regione, CAP, Stato ed Email sia della" +
     				" fatturazione che della spedizione non possono essere lasciati vuoti.")
     			.setCancelable(false)
     			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
