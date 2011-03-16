@@ -577,6 +577,7 @@ public class Cart extends Activity implements OnClickListener{
 		
     			/* Avvio l'Activity*/				
     			startActivity(check);
+    			finish();
     		}
     	}
     	else {

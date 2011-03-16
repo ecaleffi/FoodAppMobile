@@ -141,7 +141,7 @@ public class NearestMachine extends MapActivity {
         	
         };
         
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 5, locationListener);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 50, locationListener);
         
         /* Reperisco dal database le coordinate di latitudine e longitudine dei
          * distributori trovati */

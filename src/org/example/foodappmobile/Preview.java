@@ -359,6 +359,7 @@ public class Preview extends Activity implements OnClickListener{
 			b.putString(strCookieName, strCookieValue);
 			pay.putExtras(b);
 			startActivity(pay);
+			finish();
 		}
     }
 }

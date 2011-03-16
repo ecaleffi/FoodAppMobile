@@ -118,97 +118,106 @@ public class MachineActivity extends Activity{
         			}
         		}
         		
-        		/* Cerco nel database se esiste un distributore che contiene tutti
-        		 * i prodotti selezionati, altrimenti avverto l'utente */
-        		String prod = selected.get(0); /* Prendo il primo prodotto selezionato */
-        		/* Ricavo gli id associati a quel prodotto (uno o più) */
-        		List<Integer> ids = map.get(prod); 
-        		List<Integer> machineIds = new ArrayList<Integer>(); /* Risultati delle query */
-        		for (int id : ids) {
-        			/* Trovo gli id del/dei distributori che contengono quel prodotto */
-        			SQLiteDatabase db2 = fad.getReadableDatabase();
-        			String[] COL = {MACHINE_ID};
-        			String where = PRODUCT_ID + " = " + id;
-        			Cursor c = db2.query(TABLE_PRODUCT_CONTAINED, COL, where, null, null, null, null);
-        			startManagingCursor(c);
-        			while(c.moveToNext()) {
-        				int macId = c.getInt(0);
-        				machineIds.add(macId);
-        			}
-        			c.close();
-        			db2.close();
+        		/* Prima di procedere controllo che l'utente abbia selezionato almeno
+        		 * un prodotto dalla lista */
+        		if (selected.size() == 0) {
+        			printNoSelectionError();
         		}
-        		/* Ora ho l'id dei distributori che contengono il primo prodotto.
-        		 * Trovo gli altri prodotti che contengolo tali distributori */
-        		HashMap<Integer, List<Integer>> macProd = new HashMap<Integer, List<Integer>>();
-        		for (int id : machineIds) {
-        			List<Integer> prodIds = new ArrayList<Integer>();
-        			SQLiteDatabase db3 = fad.getReadableDatabase();
-        			String[] COL = {PRODUCT_ID};
-        			String where = MACHINE_ID + " = " + id;
-        			Cursor c = db3.query(TABLE_PRODUCT_CONTAINED, COL, where, null, null, null, null);
-        			startManagingCursor(c);
-        			while(c.moveToNext()) {
-        				int pId = c.getInt(0);
-        				prodIds.add(pId);
-        			}
-        			macProd.put(id, prodIds);
-        			c.close();
-        			db3.close();
-        		}
+        		else {
         		
-        		Iterator<Integer> it1 = macProd.keySet().iterator();
-        		while(it1.hasNext()) {
-        			int key = it1.next();
-        			List<Integer> val = macProd.get(key);
-        			for (int t : val) {
-        				System.out.println("id distributore: "+ key + " -> " + t);
+        			/* Cerco nel database se esiste un distributore che contiene tutti
+        			 * i prodotti selezionati, altrimenti avverto l'utente */
+        			String prod = selected.get(0); /* Prendo il primo prodotto selezionato */
+        			/* Ricavo gli id associati a quel prodotto (uno o più) */
+        			List<Integer> ids = map.get(prod); 
+        			List<Integer> machineIds = new ArrayList<Integer>(); /* Risultati delle query */
+        			for (int id : ids) {
+        				/* Trovo gli id del/dei distributori che contengono quel prodotto */
+        				SQLiteDatabase db2 = fad.getReadableDatabase();
+        				String[] COL = {MACHINE_ID};
+        				String where = PRODUCT_ID + " = " + id;
+        				Cursor c = db2.query(TABLE_PRODUCT_CONTAINED, COL, where, null, null, null, null);
+        				startManagingCursor(c);
+        				while(c.moveToNext()) {
+        					int macId = c.getInt(0);
+        					machineIds.add(macId);
+        				}
+        				c.close();
+        				db2.close();
         			}
-        		} /* OK */
+        			/* Ora ho l'id dei distributori che contengono il primo prodotto.
+        			 * Trovo gli altri prodotti che contengono tali distributori */
+        			HashMap<Integer, List<Integer>> macProd = new HashMap<Integer, List<Integer>>();
+        			for (int id : machineIds) {
+        				List<Integer> prodIds = new ArrayList<Integer>();
+        				SQLiteDatabase db3 = fad.getReadableDatabase();
+        				String[] COL = {PRODUCT_ID};
+        				String where = MACHINE_ID + " = " + id;
+        				Cursor c = db3.query(TABLE_PRODUCT_CONTAINED, COL, where, null, null, null, null);
+        				startManagingCursor(c);
+        				while(c.moveToNext()) {
+        					int pId = c.getInt(0);
+        					prodIds.add(pId);
+        				}
+        				macProd.put(id, prodIds);
+        				c.close();
+        				db3.close();
+        			}
         		
-        		/* Ora ho un hash map con chiave pari agli id dei distributori trovati e con valori gli id
-        		 * dei prodotti che essi contengono. Cerco fra questi id se ci sono gli altri prodotti
-        		 * ordinati dall'utente, altrimenti visualizzo un messaggio di errore. */
-        		Iterator<Integer> iter = macProd.keySet().iterator();
-        		while(iter.hasNext()) {
-        			int key = iter.next();
-        			/* Lista degli id dei prodotti della macchina con id = key */
-        			List<Integer> productsId = macProd.get(key);
-        			if (selected.size() > 1 ) {
-        				int nFind = 1;
-        				/* Prendo ciascuno degli altri prodotti selezionati */
-        				for (int i = 1; i < selected.size(); i++) {
-        					List<Integer> selId = map.get(selected.get(i));
-        					for (int id : selId) {
-        						if (productsId.contains(id)) {
-        							nFind++;
+        			Iterator<Integer> it1 = macProd.keySet().iterator();
+        			while(it1.hasNext()) {
+        				int key = it1.next();
+        				List<Integer> val = macProd.get(key);
+        				for (int t : val) {
+        					System.out.println("id distributore: "+ key + " -> " + t);
+        				}
+        			} /* OK */
+        		
+        			/* Ora ho un hash map con chiave pari agli id dei distributori trovati e con valori gli id
+        			 * dei prodotti che essi contengono. Cerco fra questi id se ci sono gli altri prodotti
+        			 * ordinati dall'utente, altrimenti visualizzo un messaggio di errore. */
+        			Iterator<Integer> iter = macProd.keySet().iterator();
+        			while(iter.hasNext()) {
+        				int key = iter.next();
+        				/* Lista degli id dei prodotti della macchina con id = key */
+        				List<Integer> productsId = macProd.get(key);
+        				if (selected.size() > 1 ) {
+        					int nFind = 1;
+        					/* Prendo ciascuno degli altri prodotti selezionati */
+        					for (int i = 1; i < selected.size(); i++) {
+        						List<Integer> selId = map.get(selected.get(i));
+        						for (int id : selId) {
+        							if (productsId.contains(id)) {
+        								nFind++;
+        							}
         						}
         					}
+        					if (nFind == selected.size()) {
+        						resMachine.add(key);
+        					}
         				}
-        				if (nFind == selected.size()) {
+        				else {
         					resMachine.add(key);
         				}
         			}
-        			else {
-        				resMachine.add(key);
+        		
+        			/* Stampa di prova del risultato */
+        			for (int i : resMachine) {
+        				System.out.println("Risultati: Distributore -> " + i);
+        			} /* OK */
+        		
+        			/* Controllo che i prodotti selezionati siano presenti in almeno
+        			 * una macchina altrimenti avverto l'utente con un messaggio */
+        			if (resMachine.size() == 0) {
+        				printMessage();
         			}
-        		}
+        			else {
+        				/* Avvio l'attività per mostrare il distributore più vicino
+        				 * passandogli come parametro la lista degli id dei 
+        				 * distributori trovati */
+        				startActivityNearestMachine();
+        			}
         		
-        		/* Stampa di prova del risultato */
-        		for (int i : resMachine) {
-        			System.out.println("Risultati: Distributore -> " + i);
-        		} /* OK */
-        		
-        		/* Controllo che i prodotti selezionati siano presenti in almeno
-        		 * una macchina altrimenti avverto l'utente con un messaggio */
-        		if (resMachine.size() == 0) {
-        			printMessage();
-        		}
-        		else {
-        			/* Avvio l'attività per mostrare il distributore più vicino
-        			 * passandogli come parametro la lista degli id dei 
-        			 * distributori trovati */
-        			startActivityNearestMachine();
         		}
         		
         	} // fine onClick
@@ -221,7 +230,20 @@ public class MachineActivity extends Activity{
 	private void printMessage() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Non esiste nessun distributore con i prodotti che hai" +
-				"selezionato. Riprova con una diversa combinazione di prodotti.")
+				" selezionato. Riprova con una diversa combinazione di prodotti.")
+			.setCancelable(false)
+			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+		builder.show();
+	}
+	
+	private void printNoSelectionError() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Non hai selezionato alcun prodotto. " +
+				"Effettua almeno una selezione prima di procedere")
 			.setCancelable(false)
 			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {

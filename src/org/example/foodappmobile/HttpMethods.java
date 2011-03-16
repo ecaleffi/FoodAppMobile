@@ -34,10 +34,10 @@ public class HttpMethods {
 	Cookie mycookie;
 	InetAddress myIp;
 	//String IP;
-	String IP = "http://192.168.2.7:3000/";
+	String IP = "http://155.185.145.41:3000/";
 	//String IP = "http://155.185.149.39:3000/";
 	//String domain;
-	String domain = "192.168.2.7";
+	String domain = "155.185.145.41";
 	//String domain = "155.185.149.39";
 	
 	
@@ -144,6 +144,11 @@ public class HttpMethods {
 		} else {
 			mycookie = cookies.get(0);
 			sr.setMycookie(mycookie);
+			/* STAMPA DI PROVA DEI COOKIE
+			for (int i=0; i< cookies.size(); i++) {
+				System.out.println(cookies.get(i).toString());
+			}
+			*/
 		}
 		
 		return sr;

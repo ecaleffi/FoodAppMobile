@@ -48,6 +48,20 @@ public class Payment extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+        
+        /* Inserimento valori di prova */
+        /*
+        final EditText txtccname = (EditText)findViewById(R.id.ccname);
+        txtccname.setText("Carlo Bianchi");
+    	final EditText txtccn = (EditText)findViewById(R.id.ccn);
+    	txtccn.setText("1234123412341234");
+    	final EditText txtccm = (EditText)findViewById(R.id.ccm);
+    	txtccm.setText("3");
+    	final EditText txtccy = (EditText)findViewById(R.id.ccy);
+    	txtccy.setText("16");
+    	final EditText txtccvn = (EditText)findViewById(R.id.ccvn);
+    	txtccvn.setText("123");
+    	*/
          
         
         final Button complete = (Button)findViewById(R.id.complete_order);  
@@ -191,6 +205,7 @@ public class Payment extends Activity {
     		if (resp != null) {
     			Intent ordComp = new Intent(this, OrderComplete.class);
     			startActivity(ordComp);
+    			finish();
     		}
     	}
     	

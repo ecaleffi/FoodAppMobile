@@ -24,9 +24,21 @@
          android:text="@string/prodlist_label"
          android:layout_marginBottom="10dip" />
       <Button
+         android:id="@+id/recipelist_button"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="@string/recipelist_label"
+         android:layout_marginBottom="10dip" />
+      <Button
          android:id="@+id/order_button"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
-         android:text="@string/order_label" />
+         android:text="@string/order_label"
+         android:layout_marginBottom="10dip" />
+      <Button
+         android:id="@+id/machine_button"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="@string/machine_label" />
    </LinearLayout>
 </LinearLayout>

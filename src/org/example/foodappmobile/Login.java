@@ -67,6 +67,7 @@ public class Login extends Activity{
 			bundle.putString(mycookie.getName(), mycookie.getValue());
 			select.putExtras(bundle);
         	startActivity(select);
+        	this.finish();
         	
         }
         if (respCode == 0) {

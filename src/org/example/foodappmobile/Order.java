@@ -214,6 +214,7 @@ public class Order extends Activity implements OnClickListener{
 				
 				/* Avvio l'Activity*/				
 				startActivity(cart);
+				finish();
 			}
 		}
 		

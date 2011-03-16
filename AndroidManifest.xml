@@ -4,6 +4,10 @@
       android:versionCode="1"
       android:versionName="1.0">
       <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+      <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> 
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".FoodAppMobile"
                   android:label="@string/app_name">
@@ -39,6 +43,16 @@
         	android:label="@string/payment_title" />
         <activity android:name=".OrderComplete"
         	android:label="@string/ordercomplete_title" />
+        <activity android:name=".RecipeList"
+        	android:label="@string/recipelist_title" />
+        <activity android:name=".AddProductFromCart"
+        	android:label="@string/addproduct_title" 
+			android:theme="@android:style/Theme.Dialog" />
+		<activity android:name=".MachineActivity"
+        	android:label="@string/machineActivity_title" />
+        <activity android:name=".NearestMachine"
+        	android:label="@string/nearestMachine_title" />
+        <uses-library android:name="com.google.android.maps" />
     </application>
     <uses-sdk android:minSdkVersion="8" />
 

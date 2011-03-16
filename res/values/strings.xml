@@ -24,7 +24,11 @@
     <string name="posterr">Errore POST.</string>
     <string name="select_title">Visualizza i prodotti o effettua un\'ordinazione</string>
     <string name="prodlist_label">Lista dei Prodotti</string>
-    <string name="order_label">Ordinazione</string>
+    <string name="order_label">Ordina</string>
+    <string name="machine_label">Distributori</string>
+    <string name="machineActivity_title">Distributori</string>
+    <string name="machine_title">Seleziona Prodotti</string>
+    <string name="cudb_title">Crea-Aggiorna Database</string>
     <string name="select_label">Selezione</string>
     <string name="prodlist_title">Lista dei Prodotti</string>
     <string name="order_title">Ordinazioni</string>
@@ -41,4 +45,12 @@
     	<item>Discover</item>
     </string-array>
     <string name="ordercomplete_title">Ordine Completo</string>
+    <string name="recipelist_label">Lista delle Ricette</string>
+    <string name="recipelist_title">Lista delle Ricette</string>
+    <string name="addproduct_text">
+    Il prodotto selezionato fra le ricette consigliate è stato inserito correttamente nel 
+    carrello.
+    </string>
+    <string name="addproduct_title">Prodotto Aggiunto</string>
+    <string name="nearestMachine_title">Distributore più vicino</string>
 </resources>

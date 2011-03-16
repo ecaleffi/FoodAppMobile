@@ -14,7 +14,7 @@
     <TextView
     	android:text="Grazie per aver scelto FoodApp"
     	android:textSize="15.0sp"
-    	android:gravity="right"
+    	android:gravity="center"
     	android:layout_height="wrap_content"
     	android:layout_width="fill_parent"/>
 

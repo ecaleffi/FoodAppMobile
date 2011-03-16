@@ -169,6 +169,12 @@
          		android:layout_height="wrap_content"
          		android:layout_width="wrap_content"
          		android:textSize="18.5sp" />
+         	<CheckBox
+         		android:id="@+id/check"
+         		android:text="Uguale a fatturazione"
+         		android:layout_height="wrap_content"
+         		android:layout_width="wrap_content"
+         		android:textSize="14.5sp" />
         	<View
         		android:layout_height="fill_parent"
          		android:layout_width="fill_parent"

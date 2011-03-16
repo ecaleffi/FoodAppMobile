@@ -43,6 +43,26 @@ public class Checkout extends Activity{
         strCookieValue = b.getString(strCookieName);
         System.out.println(strCookieName + "=" + strCookieValue);
         
+        /* Inserisco valori di prova */
+        /*
+		final EditText txtBillToFirstName = (EditText)findViewById(R.id.billtoname);
+		txtBillToFirstName.setText("Carlo");
+    	final EditText txtBillToLastName = (EditText)findViewById(R.id.billtosurname);
+    	txtBillToLastName.setText("Bianchi");
+    	final EditText txtBillToAddress1 = (EditText)findViewById(R.id.billtoaddress);
+    	txtBillToAddress1.setText("Via Tagliate");
+    	final EditText txtBillToCity = (EditText)findViewById(R.id.billtocity);
+    	txtBillToCity.setText("Mirandola");
+    	final EditText txtBillToState = (EditText)findViewById(R.id.billtostate);
+    	txtBillToState.setText("Emilia Romagna");
+    	final EditText txtBillToZip = (EditText)findViewById(R.id.billtozip);
+    	txtBillToZip.setText("41037");
+    	final EditText txtBillToCountry = (EditText)findViewById(R.id.billtocountry);
+    	txtBillToCountry.setText("Italia");
+    	final EditText txtBillToEmail = (EditText)findViewById(R.id.billtoemail);
+    	txtBillToEmail.setText("carlo@gmail.com");
+    	*/
+        
         final CheckBox cb = (CheckBox)findViewById(R.id.check);
         cb.setOnClickListener(new CheckBox.OnClickListener(){
         	public void onClick(View v) {
@@ -242,6 +262,7 @@ public class Checkout extends Activity{
     		b.putString(strCookieName, strCookieValue);
     		prev.putExtras(b);
     		startActivity(prev);
+    		finish();
     	}  
     }
 
